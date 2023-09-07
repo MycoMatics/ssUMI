@@ -94,3 +94,12 @@ make install  # as root or sudo make install
 ```
 
 ## Medaka <a name="Medaka"></a>
+### Installation via pip env
+**NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
+See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
+
+virtualenv medaka --python=python3 --prompt "(medaka) "
+. medaka/bin/activate
+pip install --upgrade pip
+pip install medaka
+
