@@ -15,7 +15,7 @@
 # Introduction <a name="Introduction"></a>
 
 Installing the UMI pipeline (https://github.com/ZielsLab/ssUMI) can be tricky and the install.sh script doesn't work on every machine.  
-Below you can find a break down on how to install the pipeline manually.
+Below you can find a break down on how to install the pipeline manually starting with providing a fitting conda environment with the [old UMI-pipeline](https://github.com/SorenKarst/longread_umi) installed
 
 # Install conda <a name="Installconda"></a>
 Many of the dependencies can be installed with the packaging management system called conda.
