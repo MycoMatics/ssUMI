@@ -21,12 +21,20 @@ Many of the dependencies can be installed with the packaging management system c
 Go to the [conda docs](https://docs.conda.io) and learn how to install conda on your machine.
 
 # Create a conda environment <a name="Create_a_conda_environment"></a>
+**create from yml file**  
+```bash
+wget -O longread_umi.yml https://raw.githubusercontent.com/MycoMatics/ssUMI/main/ssumi.yml?token=GHSAT0AAAAAACGUWE3JJBUQ6PDONCYAYU3IZHZZKBA
+conda env create -n longread_umi --file longread_umi.yml
+```
+If that works for you proceed to [Extra package install](#packageinstall) 
 
-Create a new environment
+If not proceed with:
+**Create a new environment**
 ```bash
 conda env create -n longread_umi
 ```
-If that works for you proceed to [Extra package install](#packageinstall)  
+ 
+
 OR create from yml file
 ```bash
 wget -O longread_umi.yml https://raw.githubusercontent.com/MycoMatics/ssUMI/main/ssumi.yml?token=GHSAT0AAAAAACGUWE3JJBUQ6PDONCYAYU3IZHZZKBA
