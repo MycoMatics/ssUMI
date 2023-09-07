@@ -68,4 +68,22 @@ cd vsearch-2.23.0
 make
 make install  # as root or sudo make install
 ```
-# install Medaka
+# install Medaka <a name="Medaka"></a>
+
+**Installation via pip env**
+Bioinformatic tools are beeing installed in a central folder with symlinks to $PATH, in this case in /usr/local/bioinfo.
+
+```bash
+mkdir /usr/local/bioinfo
+cd /usr/local/bioinfo
+
+virtualenv medaka --python=python3 --prompt "(medaka_pipenv)" # creates a medaka folder in $PWD
+. /usr/local/bioinfo/medaka/bin/activate # activates medaka pip env => ((medaka_pipenv)) (base) bioinfo:$
+pip install --upgrade pip
+pip install medaka # installs medaka and dependencies from pip into the medaka_pipenv
+medaka tools download_models 
+deactivate
+```
+
+**NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
+See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
