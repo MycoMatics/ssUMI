@@ -1,7 +1,7 @@
 # Table of contents
 1. [Introduction](#Introduction)
 2. [Install conda](#Installconda)
-3. [Create a conda environment](#Create_a_conda_environment)
+   - [Create a conda environment](#Create_a_conda_environment)
    - [From predefined yml file](#From_predefined_yml_file)
    - [Manual](#Manual)
 4. [Install longread UMI sofware packages](#install_software)
@@ -19,14 +19,14 @@ Below you can find a break down on how to install the pipeline manually.
 Many of the dependencies can be installed with the packaging management system called conda.
 Go to the [conda docs](https://docs.conda.io) and learn how to install conda on your machine.
 
-# Create a conda environment <a name="Create_a_conda_environment"></a>
+## Create a conda environment <a name="Create_a_conda_environment"></a>
 
-## From predefined yml file <a name="From_predefined_yml_file"></a>
+### From predefined yml file <a name="From_predefined_yml_file"></a>
 Download the environment file (.yml format) [HERE]()
 ```bash
 conda env create -f ./longread_umi.yml
 ```
-## Manual <a name="Manual"></a>
+### Manual <a name="Manual"></a>
 Create a new environment
 ```bash
 conda env create -n longread_umi
@@ -61,5 +61,10 @@ You might notice this is a long process, the connection to the conda repo's can 
 Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
 
 ## Usearch <a name="Usearch"></a>
+Usearch program is only one file, the free version is 32bit (slower than the paying version which is 64bit).  
+If you need more information on the program follow [this website](https://www.drive5.com/usearch/manual/install.html).  
+
+**Direct link to [download page](https://drive5.com/usearch/download.html)**
+
 ## Vsearch <a name="Vsearch"></a>
 ## Medaka <a name="Medaka"></a>
