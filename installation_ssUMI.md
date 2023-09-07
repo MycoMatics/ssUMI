@@ -1,7 +1,7 @@
 # Table of contents
 1. [Introduction](#Introduction)
 2. [Install conda](#Installconda)
-   - [Create a conda environment](#Create_a_conda_environment)
+3. [Create a conda environment](#Create_a_conda_environment)
 4. [Install longread UMI sofware packages](#install_software)
    - [Dependencies through conda](#Dependencies)
    - [Extra package install](#packageinstall)
@@ -20,7 +20,7 @@ Starting with building a fitting conda environment and cloning the [old UMI-pipe
 Many of the dependencies can be installed with the packaging management system called conda.
 Go to the [conda docs](https://docs.conda.io) and learn how to install conda on your machine.
 
-## Create a conda environment <a name="Create_a_conda_environment"></a>
+# Create a conda environment <a name="Create_a_conda_environment"></a>
 
 Create a new environment
 ```bash
