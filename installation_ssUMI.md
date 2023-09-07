@@ -9,6 +9,7 @@
    - [Usearch](#Usearch)
    - [Vsearch](#Vsearch)
    - [Medaka](#Medaka)
+   - [UMI-pipeline scripts](#UMI_scripts)
      
 # Introduction <a name="Introduction"></a>
 
@@ -102,12 +103,14 @@ mkdir /usr/local/bioinfo
 cd /usr/local/bioinfo
 
 virtualenv medaka --python=python3 --prompt "(medaka_pipenv)" # creates a medaka folder in $PWD
-. medaka/bin/activate # activates medaka pip env => ((medaka_pipenv)) (base) bioinfo:/usr/local/bioinfo$
+. /usr/local/bioinfo/medaka/bin/activate # activates medaka pip env => ((medaka_pipenv)) (base) bioinfo:$
 pip install --upgrade pip
-pip install medaka
-medaka tools download_models
+pip install medaka # installs medaka and dependencies from pip into the medaka_pipenv
+medaka tools download_models 
 deactivate
 ```
 
 **NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
-See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
+See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.  
+
+## UMI-pipeline scripts <a name="UMI_scripts"></a>
