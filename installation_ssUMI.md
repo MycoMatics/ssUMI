@@ -51,7 +51,7 @@ conda install samtools=1.9
 conda install bcftools=1.9
 conda install git
 ```
-**NOTE: create from yml file, download file here
+**NOTE: create from yml file, download file [here](https://raw.githubusercontent.com/MycoMatics/ssUMI/main/ssumi.yml?token=GHSAT0AAAAAACGUWE3IKA2QG23BY6O6NBOCZHZZGDA)
 You might notice this is a long process, the connection to the conda repo's can be quite slow. An alternative is **Mamba**.  
 **Mamba** is a reimplementation of the conda package manager in C++. Basically it runs faster compared to **Conda** using the same repos.  
 Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
