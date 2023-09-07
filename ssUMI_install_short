@@ -1,1 +1,4 @@
-
+## Installation
+# change porechop path
+# install vsearch & usearch in /usr/local/bin
+# install Medaka
