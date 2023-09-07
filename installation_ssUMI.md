@@ -5,7 +5,8 @@
    - [From predefined yml file](#From_predefined_yml_file)
    - [Manual](#Manual)
 4. [Install longread UMI sofware packages](#install_software)
-   - [Dependencies](#Dependencies)
+   - [Dependencies through conda](#Dependencies)
+   - [Dependencies through pip install(#packageinstall)]
    - [Usearch](#Usearch)
    - [Vsearch](#Vsearch)
    - [Medaka](#Medaka)
@@ -35,7 +36,7 @@ conda env create -n longread_umi
 
 # Install longread UMI sofware packages <a name="install_software"></a>
 
-## Depedencies <a name="Dependencies"></a>
+## Depedencies through conda <a name="Dependencies"></a>
    - Activate your conda environment          
 ```console
 (base) bioinfo:~$ conda activate longread_umi
@@ -60,6 +61,10 @@ conda install git
 You might notice this is a long process, the connection to the conda repo's can be quite slow. An alternative is **Mamba**.  
 **Mamba** is a reimplementation of the conda package manager in C++. Basically it runs faster compared to **Conda** using the same repos.  
 Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
+
+## Other Dependencies and packages <a name="packageinstall"></a>
+###porechops
+###longread_umi pipeline
 
 ## Usearch <a name="Usearch"></a>
 Usearch program is only one file, the free version is 32bit (slower than the paying version which is 64bit).  
