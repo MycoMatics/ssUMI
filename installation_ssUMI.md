@@ -114,3 +114,15 @@ deactivate
 See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.  
 
 ## UMI-pipeline scripts <a name="UMI_scripts"></a>
+
+Download the ssUMI scripts:
+```bash
+git clone https://github.com/ZielsLab/ssUMI.git
+```
+Replace the longread_umi scripts folder with the new (ssUMI) scripts folder.
+```bash
+mv $script_path/scripts $script_path/scripts_old
+mv path/to/ssUMI/scripts $script_path/
+chmod +x $script_path/scripts/*
+```
+
