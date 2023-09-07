@@ -5,6 +5,10 @@
    - [From predefined yml file](#From_predefined_yml_file)
    - [Manual](#Manual)
 4. [Install longread UMI sofware packages](#install_software)
+   - [Dependencies](#Dependencies)
+   - [Usearch](#Usearch)
+   - [Vsearch](#Vsearch)
+   - [Medaka](#Medaka)
      
 # Introduction <a name="Introduction"></a>
 
@@ -29,6 +33,8 @@ conda env create -n longread_umi
 ```
 
 # Install longread UMI sofware packages <a name="install_software"></a>
+
+## Depedencies <a name="Dependencies"></a>
    - Activate your conda environment          
 ```console
 (base) bioinfo:~$ conda activate longread_umi
@@ -42,7 +48,6 @@ conda install seqtk=1.3
 conda install parallel=20191122
 conda install racon=1.4.10
 conda install minimap2=2.17
-conda install medaka=0.11.5
 conda install gawk=4.1.3
 conda install cutadapt=2.7
 conda install filtlong=0.2.0
@@ -54,3 +59,7 @@ conda install git
 You might notice this is a long process, the connection to the conda repo's can be quite slow. An alternative is **Mamba**.  
 **Mamba** is a reimplementation of the conda package manager in C++. Basically it runs faster compared to **Conda** using the same repos.  
 Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
+
+## Usearch <a name="Usearch"></a>
+## Vsearch <a name="Vsearch"></a>
+## Medaka <a name="Medaka"></a>
