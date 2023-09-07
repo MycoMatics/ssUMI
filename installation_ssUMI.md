@@ -77,4 +77,19 @@ lrwxr-xr-x 1 robert admin 26 2012-07-19 08:55 usearch -> usearch6.0.98_i86linux3
  ```
    3. Make sure the 
 ## Vsearch <a name="Vsearch"></a>
+Vsearch is the free version of 64bit Usearch sort of speak.  
+For more info and detailed download and installtion instructions go to [VSEARCHgit](https://github.com/torognes/vsearch)  
+Source distribution [all versions](https://github.com/torognes/vsearch/releases)
+
+Famous last words: 
+   > I know what I'm doing, I don't need no manual.
+```bash
+wget https://github.com/torognes/vsearch/archive/v2.23.0.tar.gz
+tar xzf v2.23.0.tar.gz
+cd vsearch-2.23.0
+./autogen.sh
+./configure CFLAGS="-O3" CXXFLAGS="-O3" --prefix=/usr/local
+make
+make install  # as root or sudo make install
+
 ## Medaka <a name="Medaka"></a>
