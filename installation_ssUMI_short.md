@@ -36,7 +36,7 @@ mv $script_path/test_Data $script_path/test_data_old
 mv path/to/ssUMI/test_data $script_path/
 ```
 
-## Install Usearch <a name="Usearch"></a>
+# Install Usearch <a name="Usearch"></a>
 Usearch program is only one file, the free version is 32bit (slower than the paying version which is 64bit).  
 If you need more information on the program follow [this website](https://www.drive5.com/usearch/manual/install.html).  
 
@@ -52,7 +52,7 @@ $ ls -l usearch
 lrwxr-xr-x 1 robert admin 26 2012-07-19 08:55 usearch -> usearch6.0.98_i86linux32
  ```
    3. Make sure the 
-## Install Vsearch <a name="Vsearch"></a>
+# Install Vsearch <a name="Vsearch"></a>
 Vsearch is the free version of 64bit Usearch sort of speak.  
 For more info, detailed download and installtion instructions go to [VSEARCHgit](https://github.com/torognes/vsearch)  
 Source distribution [all versions](https://github.com/torognes/vsearch/releases)
@@ -68,5 +68,4 @@ cd vsearch-2.23.0
 make
 make install  # as root or sudo make install
 ```
-# install vsearch & usearch in /usr/local/bin
 # install Medaka
