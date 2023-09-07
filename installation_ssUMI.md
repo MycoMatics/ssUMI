@@ -95,11 +95,19 @@ make install  # as root or sudo make install
 
 ## Medaka <a name="Medaka"></a>
 ### Installation via pip env
-**NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
-See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
+Bioinformatic tools are beeing installed in a central folder with symlinks to $PATH, in this case in /usr/local/bioinfo.
 
-virtualenv medaka --python=python3 --prompt "(medaka) "
-. medaka/bin/activate
+```bash
+mkdir /usr/local/bioinfo
+cd /usr/local/bioinfo
+
+virtualenv medaka --python=python3 --prompt "(medaka_pipenv)" # creates a medaka folder in $PWD
+. medaka/bin/activate # activates medaka pip env => ((medaka_pipenv)) (base) bioinfo:/usr/local/bioinfo$
 pip install --upgrade pip
 pip install medaka
+medaka tools download_models
+deactivate
+```
 
+**NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
+See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
