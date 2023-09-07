@@ -6,11 +6,11 @@
    - [Manual](#Manual)
 4. [Install longread UMI sofware packages](#install_software)
    - [Dependencies through conda](#Dependencies)
-   - [Dependencies through pip install(#packageinstall)]
+   - [Extra package install](#packageinstall)
    - [Usearch](#Usearch)
    - [Vsearch](#Vsearch)
    - [Medaka](#Medaka)
-   - [UMI-pipeline scripts](#UMI_scripts)
+   - [ssUMI-pipeline scripts](#UMI_scripts)
      
 # Introduction <a name="Introduction"></a>
 
@@ -62,10 +62,20 @@ You might notice this is a long process, the connection to the conda repo's can 
 **Mamba** is a reimplementation of the conda package manager in C++. Basically it runs faster compared to **Conda** using the same repos.  
 Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
 
-## Other Dependencies and packages <a name="packageinstall"></a>
-###porechops
-###longread_umi pipeline
-
+## Extra package install <a name="packageinstall"></a>
+### porechops 
+```bash
+$CONDA_PREFIX/bin/pip install \
+  git+https://github.com/rrwick/Porechop.git
+```
+**Note: keep in mind that you need to work in your activated conda env!!** 
+### longread_umi pipeline  
+```bash
+git clone \
+  --branch 1:-master \
+  https://github.com/SorenKarst/longread-UMI-pipeline.git \
+  $CONDA_PREFIX/longread_umi
+```
 ## Usearch <a name="Usearch"></a>
 Usearch program is only one file, the free version is 32bit (slower than the paying version which is 64bit).  
 If you need more information on the program follow [this website](https://www.drive5.com/usearch/manual/install.html).  
@@ -118,7 +128,7 @@ deactivate
 **NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
 See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.  
 
-## UMI-pipeline scripts <a name="UMI_scripts"></a>
+## ssUMI-pipeline scripts <a name="ssUMI_scripts"></a>
 
 Download the ssUMI scripts:
 ```bash
