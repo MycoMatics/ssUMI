@@ -26,6 +26,10 @@ Create a new environment
 ```bash
 conda env create -n longread_umi
 ```
+OR create from yml file
+```bash
+wget https://github.com/MycoMatics/ssUMI/blob/main/ssumi.yml
+
 
 # Install longread UMI sofware packages <a name="install_software"></a>
 
