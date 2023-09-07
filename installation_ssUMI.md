@@ -26,6 +26,7 @@ Create a new environment
 ```bash
 conda env create -n longread_umi
 ```
+If that works for you proceed to (#packageinstall)
 OR create from yml file
 ```bash
 wget -O longread_umi.yml https://raw.githubusercontent.com/MycoMatics/ssUMI/main/ssumi.yml?token=GHSAT0AAAAAACGUWE3JJBUQ6PDONCYAYU3IZHZZKBA
