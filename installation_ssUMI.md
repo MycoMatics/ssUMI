@@ -2,8 +2,6 @@
 1. [Introduction](#Introduction)
 2. [Install conda](#Installconda)
    - [Create a conda environment](#Create_a_conda_environment)
-   - [From predefined yml file](#From_predefined_yml_file)
-   - [Manual](#Manual)
 4. [Install longread UMI sofware packages](#install_software)
    - [Dependencies through conda](#Dependencies)
    - [Extra package install](#packageinstall)
@@ -24,12 +22,6 @@ Go to the [conda docs](https://docs.conda.io) and learn how to install conda on 
 
 ## Create a conda environment <a name="Create_a_conda_environment"></a>
 
-### From predefined yml file <a name="From_predefined_yml_file"></a>
-Download the environment file (.yml format) [HERE]()
-```bash
-conda env create -f ./longread_umi.yml
-```
-### Manual <a name="Manual"></a>
 Create a new environment
 ```bash
 conda env create -n longread_umi
@@ -59,6 +51,7 @@ conda install samtools=1.9
 conda install bcftools=1.9
 conda install git
 ```
+**NOTE: create from yml file, download file here
 You might notice this is a long process, the connection to the conda repo's can be quite slow. An alternative is **Mamba**.  
 **Mamba** is a reimplementation of the conda package manager in C++. Basically it runs faster compared to **Conda** using the same repos.  
 Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
