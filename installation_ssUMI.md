@@ -78,7 +78,7 @@ lrwxr-xr-x 1 robert admin 26 2012-07-19 08:55 usearch -> usearch6.0.98_i86linux3
    3. Make sure the 
 ## Vsearch <a name="Vsearch"></a>
 Vsearch is the free version of 64bit Usearch sort of speak.  
-For more info and detailed download and installtion instructions go to [VSEARCHgit](https://github.com/torognes/vsearch)  
+For more info, detailed download and installtion instructions go to [VSEARCHgit](https://github.com/torognes/vsearch)  
 Source distribution [all versions](https://github.com/torognes/vsearch/releases)
 
 Famous last words: 
