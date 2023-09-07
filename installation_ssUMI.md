@@ -64,12 +64,13 @@ You might notice this is a long process, the connection to the conda repo's can 
 Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
 
 ## Extra package install <a name="packageinstall"></a>
+**Note: keep in mind that you need to work in your activated conda env!!** 
 ### porechops 
 ```bash
 $CONDA_PREFIX/bin/pip install \
   git+https://github.com/rrwick/Porechop.git
 ```
-**Note: keep in mind that you need to work in your activated conda env!!** 
+
 ### longread_umi pipeline  
 ```bash
 git clone \
