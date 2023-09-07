@@ -34,7 +34,8 @@ conda env create -n longread_umi
 (base) bioinfo:~$ conda activate longread_umi
 (longread_umi) bioinfo:~$
 ```
-**NOTE: avoid installing software in your base env, always check first if you are working in the correct env, notice *base* => *longread_umi***  
+**NOTE: avoid installing software in your base env, always check first if you are working in the correct env**  
+**notice *base* => *longread_umi***  
    - Install necessary packages one by one
 ```bash
 conda install seqtk=1.3
@@ -50,6 +51,6 @@ conda install samtools=1.9
 conda install bcftools=1.9
 conda install git
 ```
-You might notice this is a long process, the connection to the conda repo's can be quite slow. An alternative is **Mamba**.
-**Mamba** is a reimplementation of the conda package manager in C++. Basically it runs faster compared to **Conda** using the same repos.
-Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba)
+You might notice this is a long process, the connection to the conda repo's can be quite slow. An alternative is **Mamba**.  
+**Mamba** is a reimplementation of the conda package manager in C++. Basically it runs faster compared to **Conda** using the same repos.  
+Lear more on Mamba [HERE](https://anaconda.org/conda-forge/mamba) .  
