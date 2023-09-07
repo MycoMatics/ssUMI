@@ -87,3 +87,6 @@ deactivate
 
 **NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
 See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
+
+# TODO edit file dependencies from: https://github.com/ZielsLab/ssUMI
+# TODO TEST RUN
