@@ -91,5 +91,6 @@ cd vsearch-2.23.0
 ./configure CFLAGS="-O3" CXXFLAGS="-O3" --prefix=/usr/local
 make
 make install  # as root or sudo make install
+```
 
 ## Medaka <a name="Medaka"></a>
