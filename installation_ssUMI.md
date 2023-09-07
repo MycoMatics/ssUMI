@@ -65,6 +65,16 @@ Usearch program is only one file, the free version is 32bit (slower than the pay
 If you need more information on the program follow [this website](https://www.drive5.com/usearch/manual/install.html).  
 
 **Direct link to [download page](https://drive5.com/usearch/download.html)**
-
+   1. Download binary file to /usr/local/bin
+   2. Make a sym link to the file for keeping things easy
+```bash
+ln -s usearch6.0.98_i86linux32 usearch
+```
+**NOTE: Using a symbolic link has the advantage that the original name is preserved and will be shown by the ls -l command, e.g:**
+```console
+$ ls -l usearch
+lrwxr-xr-x 1 robert admin 26 2012-07-19 08:55 usearch -> usearch6.0.98_i86linux32
+ ```
+   3. Make sure the 
 ## Vsearch <a name="Vsearch"></a>
 ## Medaka <a name="Medaka"></a>
