@@ -1,15 +1,15 @@
 **Table of contents**
 
-  1. Installation <a name="Installation"></a>
-    1.1 Install longread umi <a name="Installlongreadumi"></a>
-    1.2 Move from UMI to ssUMI pipeline <a name="MovefromUMItossUMIpipeline"></a>
-  2. Install Usearch <a name="Usearch"></a>
-  3. Install Vsearch <a name="Vsearch"></a>
-  4. Install Medaka <a name="Medaka"></a>
-  5. Small changes in scripts <a name="Smallchangesinscripts"></a>
-    5.1 Filename: dependencies.sh <a name="Filename:dependencies.sh"></a>
-    5.2 Filename: ssumi_std.sh <a name="Filename:ssumi_std.sh"></a>
-    5.3 Filename: umi_binning.sh <a name="Filename:umi_binning.sh"></a>
+  1. [Installation](#Installation) 
+    1.1 [Install](#Installlongreadumi)
+    1.2 [Move from UMI to ssUMI pipeline](#MovefromUMItossUMIpipeline)
+  2. [Install Usearch](#Usearch)
+  3. [Install Vsearch](#Vsearch)
+  4. [Install Medaka](#Medaka)
+  5. [Small changes in scripts](#Smallchangesinscripts)
+    5.1 [Filename: dependencies.sh](#Filename:dependencies.sh)
+    5.2 [Filename: ssumi_std.sh](#Filename:ssumi_std.sh)
+    5.3 [Filename: umi_binning.sh](#Filename:umi_binning.sh) 
 
 # Installation <a name="Installation"></a>
 ## Install longread umi <a name="Installlongreadumi"></a>
@@ -23,7 +23,7 @@ $CONDA_PREFIX/bin/pip install \
   3. delete medaka from yml conda
   4. run installation script
 
-## move to ssUMI
+## Move from UMI to ssUMI pipeline <a name="MovefromUMItossUMIpipeline"></a>
   1. determine prefix  
 Determine the location of the package contents. For instance, if longread_umi was installed via conda, type:
 ```bash
@@ -101,13 +101,13 @@ deactivate
 **NOTE:** The bioconda medaka packages are no longer supported by Oxford Nanopore Technologies.  
 See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
 
-# Small changes in scripts
+# Small changes in scripts <a name="Smallchangesinscripts"></a>
 The ssUMI pipeline uses different scripts where you need to set parameters which are different on each system.
 The scripts are found in the $script_path/ (see ## move to ssUMI) folder of the umi_pipeline.
 General changes can be found in the github [Zielslab repo](https://github.com/ZielsLab/ssUMI).  
 Other changes and optimizations are made by the mycology lab for fitting to the slightly changes in wet lab approach compared to the labwork used by the original authors.
 
-## Filename: dependencies.sh
+## Filename: dependencies.sh <a name="Filename:dependencies.sh"></a>
 Adjust $PATH of following dependencies  
 
 |  Tool |Line replace   |
@@ -116,7 +116,52 @@ Adjust $PATH of following dependencies
 |Vsearch   | export VSEARCH="/path/to/vsearch"  |
 |Medaka   | export MEDAKA_ENV_START="source /path/to/medaka/bin/activate"   |
 
-## Filename: umi_binning.sh
+## Filename: ssumi_std.sh <a name="Filename:ssumi_std.sh"></a>
+
+  - LINE 222: for correct directory
+```bash
+tar -czvf ${CON_DIR2}/mapping.tar.gz >${CON_DIR2}/mapping/umi*bins --remove-files
+```
+
+  - LINE 209: Clean-up (compressing) of medaka mapping directory should be moved within the for loop
+```bash
+## Polishing
+CON=${CON_DIR}/consensus_${CON_NAME}.fa
+for j in `seq 1 $POL_N`; do
+  POLISH_NAME=medakax${j}
+  POLISH_DIR=${CON_DIR}_${POLISH_NAME}
+  longread_umi polish_medaka \
+    -c $CON                              `# Path to consensus data`\
+    -m $MEDAKA_MODEL                     `# Path to consensus data`\
+    -l $MAX_LENGTH                       `# Sensible chunk size`\
+    -d $UMI_DIR/read_binning/bins        `# Path to UMI bins`\
+    -o $POLISH_DIR                       `# Output folder`\
+    -t $THREADS                          `# Number of threads`\
+    -n $OUT_DIR/sample$UMI_SUBSET_N.txt  `# List of bins to process` \
+    -T $MEDAKA_JOBS                      `# Uses ALL threads with medaka`
+  CON=$POLISH_DIR/consensus_${CON_NAME}_${POLISH_NAME}.fa
+  #Tidy up
+  tar -czvf ${POLISH_DIR}/mapping.tar.gz ${POLISH_DIR}/mapping --remove-files
+done
+```
+
+  - LINE224 – 225: Clean-up of final racon polishing should compress and remove correct directory
+```bash
+## Final racon polishing
+CON_N2=1
+CON_NAME2=${CON_NAME}_${POLISH_NAME}_raconx${CON_N2}
+CON_DIR2=$OUT_DIR/$CON_NAME2
+longread_umi polish_racon \
+    -c $CON                              `# Path to consensus data`\
+    -d $UMI_DIR/read_binning/bins        `# Path to UMI bins`\
+    -o $CON_DIR2                          `# Output folder`\
+    -t $THREADS                          `# Number of threads`
+#Tidy up
+tar -czvf ${CON_DIR2}/mapping.tar.gz ${CON_DIR2}/mapping/umi*bins --remove-files
+rmdir ${CON_DIR2}/mapping
+```
+
+## Filename: umi_binning.sh <a name="Filename:umi_binning.sh"></a>
   - Last line of the scirpt
 ```bash
 tail -n +1 > $BINNING_DIR/pass_bins.txt
@@ -221,49 +266,5 @@ cat $UMI_DIR/umi_ref.fa <($SEQTK seq -r $UMI_DIR/umi_ref.fa |\
        print substr($0, 1, 28) > BD"/umi_ref_b1.fa";
        print substr($0, 29, 28)  > BD"/umi_ref_b2.fa";  
      }'
-```
-## Filename: ssumi_std.sh
-
-  - LINE 222: for correct directory
-```bash
-tar -czvf ${CON_DIR2}/mapping.tar.gz >${CON_DIR2}/mapping/umi*bins --remove-files
-```
-
-  - LINE 209: Clean-up (compressing) of medaka mapping directory should be moved within the for loop
-```bash
-## Polishing
-CON=${CON_DIR}/consensus_${CON_NAME}.fa
-for j in `seq 1 $POL_N`; do
-  POLISH_NAME=medakax${j}
-  POLISH_DIR=${CON_DIR}_${POLISH_NAME}
-  longread_umi polish_medaka \
-    -c $CON                              `# Path to consensus data`\
-    -m $MEDAKA_MODEL                     `# Path to consensus data`\
-    -l $MAX_LENGTH                       `# Sensible chunk size`\
-    -d $UMI_DIR/read_binning/bins        `# Path to UMI bins`\
-    -o $POLISH_DIR                       `# Output folder`\
-    -t $THREADS                          `# Number of threads`\
-    -n $OUT_DIR/sample$UMI_SUBSET_N.txt  `# List of bins to process` \
-    -T $MEDAKA_JOBS                      `# Uses ALL threads with medaka`
-  CON=$POLISH_DIR/consensus_${CON_NAME}_${POLISH_NAME}.fa
-  #Tidy up
-  tar -czvf ${POLISH_DIR}/mapping.tar.gz ${POLISH_DIR}/mapping --remove-files
-done
-```
-
-  - LINE224 – 225: Clean-up of final racon polishing should compress and remove correct directory
-```bash
-## Final racon polishing
-CON_N2=1
-CON_NAME2=${CON_NAME}_${POLISH_NAME}_raconx${CON_N2}
-CON_DIR2=$OUT_DIR/$CON_NAME2
-longread_umi polish_racon \
-    -c $CON                              `# Path to consensus data`\
-    -d $UMI_DIR/read_binning/bins        `# Path to UMI bins`\
-    -o $CON_DIR2                          `# Output folder`\
-    -t $THREADS                          `# Number of threads`
-#Tidy up
-tar -czvf ${CON_DIR2}/mapping.tar.gz ${CON_DIR2}/mapping/umi*bins --remove-files
-rmdir ${CON_DIR2}/mapping
 ```
 # TODO TEST RUN
