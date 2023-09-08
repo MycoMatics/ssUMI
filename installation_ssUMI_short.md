@@ -1,7 +1,7 @@
 **Table of contents**
 
   1. [Installation](#Installation)   
-    1.1 [Install](#Installlongreadumi)  
+    1.1 [Install longread UMI from Karst et al](#Installlongreadumi)  
     1.2 [Move from UMI to ssUMI pipeline](#MovefromUMItossUMIpipeline)  
   2. [Install Usearch](#Usearch)  
   3. [Install Vsearch](#Vsearch)  
@@ -13,7 +13,7 @@
      
 <a name="Installation"></a>
 # Installation 
-## Install longread umi <a name="Installlongreadumi"></a>
+## Install longread umi (from Karst et.al) <a name="Installlongreadumi"></a>
 
   1. download install_conda.sh: https://github.com/SorenKarst/longread_umi
   2. change porechop path in install_conda.sh: 
