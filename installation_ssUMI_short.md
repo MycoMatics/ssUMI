@@ -1,7 +1,7 @@
 **Table of contents**
 
   1. [Installation](#Installation)   
-    1.1 [Install longread UMI](#Installlongreadumi)  
+    1.1 [Install longread umi](#Installlongreadumi)  
     1.2 [Move from UMI to ssUMI pipeline](#MovefromUMItossUMIpipeline)  
   2. [Install Usearch](#Usearch)  
   3. [Install Vsearch](#Vsearch)  
