@@ -7,9 +7,9 @@
   3. [Install Vsearch](#Vsearch)  
   4. [Install Medaka](#Medaka)  
   5. [Small changes in scripts](#Smallchangesinscripts)  
-    5.1 [Filename: dependencies.sh](#Filename:dependencies)  
-    5.2 [Filename: ssumi_std.sh](#Filename:ssumi_std)  
-    5.3 [Filename: umi_binning.sh](#Filename:umi_binning)
+    5.1 [Filename: dependencies.sh](#Filenamedependencies)  
+    5.2 [Filename: ssumi_std.sh](#Filenamessumistd)  
+    5.3 [Filename: umi_binning.sh](#Filenameumibinning)
 
 # Installation <a name="Installation"></a>
 ## Install longread umi <a name="Installlongreadumi"></a>
@@ -107,7 +107,7 @@ The scripts are found in the $script_path/ (see ## move to ssUMI) folder of the 
 General changes can be found in the github [Zielslab repo](https://github.com/ZielsLab/ssUMI).  
 Other changes and optimizations are made by the mycology lab for fitting to the slightly changes in wet lab approach compared to the labwork used by the original authors.
 
-## Filename: dependencies.sh <a name="Filename:dependencies"></a>
+## Filename: dependencies.sh <a name="Filenamedependencies"></a>
 
 Adjust $PATH of following dependencies  
 
@@ -117,7 +117,7 @@ Adjust $PATH of following dependencies
 |Vsearch   | export VSEARCH="/path/to/vsearch"  |
 |Medaka   | export MEDAKA_ENV_START="source /path/to/medaka/bin/activate"   |
 
-## Filename: ssumi_std.sh <a name="Filename:ssumi_std"></a>
+## Filename: ssumi_std.sh <a name="Filenamessumistd"></a>
 
   - LINE 222: for correct directory
 ```bash
@@ -162,7 +162,7 @@ tar -czvf ${CON_DIR2}/mapping.tar.gz ${CON_DIR2}/mapping/umi*bins --remove-files
 rmdir ${CON_DIR2}/mapping
 ```
 
-## Filename: umi_binning.sh <a name="Filename:umi_binning"></a>
+## Filename: umi_binning.sh <a name="Filenameumibinning"></a>
   - Last line of the scirpt
 ```bash
 tail -n +1 > $BINNING_DIR/pass_bins.txt
