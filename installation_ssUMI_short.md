@@ -11,7 +11,7 @@ $CONDA_PREFIX/bin/pip install \
   4. run installation script
 
 ## move to ssUMI
-  1. determine prefix
+  1. determine prefix  
 Determine the location of the package contents. For instance, if longread_umi was installed via conda, type:
 ```bash
 conda activate longread_umi
