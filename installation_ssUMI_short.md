@@ -25,7 +25,7 @@ $CONDA_PREFIX/bin/pip install \
   4. run installation script
 
 <a name="MovefromUMItossUMIpipeline"></a>
-## Move from UMI to ssUMI pipeline   
+## Move from UMI to ssUMI pipeline  
 
   1. determine prefix  
 Determine the location of the package contents. For instance, if longread_umi was installed via conda, type:
@@ -51,8 +51,8 @@ chmod +x $script_path/scripts/*
 mv $script_path/test_Data $script_path/test_data_old
 mv path/to/ssUMI/test_data $script_path/
 ```
-
-# Install Usearch <a name="Usearch"></a>
+<a name="Usearch"></a>
+# Install Usearch  
 Usearch program is only one file, the free version is 32bit (slower than the paying version which is 64bit).  
 If you need more information on the program follow [this website](https://www.drive5.com/usearch/manual/install.html).  
 
