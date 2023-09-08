@@ -89,4 +89,11 @@ deactivate
 See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
 
 # TODO edit file dependencies from: https://github.com/ZielsLab/ssUMI
+## $script_path/scripts/dependencies.sh
+Adjust $PATH of following dependencies
+|  Tool |Line replace   |
+|---|---|
+|Usearch   | export USEARCH="/path/to/usearch"  |
+|Vsearch   | export VSEARCH="/path/to/vsearch"  |
+|Medaka   | export MEDAKA_ENV_START="source /path/to/medaka/bin/activate"   |
 # TODO TEST RUN
