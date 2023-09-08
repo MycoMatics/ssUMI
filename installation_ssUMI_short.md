@@ -89,8 +89,10 @@ deactivate
 See other installation [suggestions](https://github.com/nanoporetech/medaka) from ONT for medaka installations.
 
 # Small changes in scripts
-The ssUMI pipeline uses different scripts where you need to set some parameters which are different on each system.
-The scripts are found in the $script_path/ (see ## move to ssUMI) folder of the umi_pipeline
+The ssUMI pipeline uses different scripts where you need to set parameters which are different on each system.
+The scripts are found in the $script_path/ (see ## move to ssUMI) folder of the umi_pipeline.
+General changes can be found in the github [Zielslab repo](https://github.com/ZielsLab/ssUMI).  
+Other changes and optimizations are made by the mycology lab for fitting to the slightly changes in wet lab approach compared to the labwork used by the original authors.
 
 ## Filename: dependencies.sh
 Adjust $PATH of following dependencies  
