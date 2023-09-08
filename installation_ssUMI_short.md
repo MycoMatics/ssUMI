@@ -10,8 +10,9 @@
     5.1 [Filename: dependencies.sh](#Filenamedependencies)  
     5.2 [Filename: ssumi_std.sh](#Filenamessumistd)  
     5.3 [Filename: umi_binning.sh](#Filenameumibinning)
-
-# Installation <a name="Installation"></a>
+     
+<a name="Installation"></a>
+# Installation 
 ## Install longread umi <a name="Installlongreadumi"></a>
 
   1. download install_conda.sh: https://github.com/SorenKarst/longread_umi
