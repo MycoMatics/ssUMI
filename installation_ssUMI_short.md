@@ -1,5 +1,18 @@
-# Installation
-## Install longread umi
+**Table of contents**
+
+  1. Installation <a name="Installation"></a>
+    1.1 Install longread umi <a name="Installlongreadumi"></a>
+    1.2 Move from UMI to ssUMI pipeline <a name="MovefromUMItossUMIpipeline"></a>
+  2. Install Usearch <a name="Usearch"></a>
+  3. Install Vsearch <a name="Vsearch"></a>
+  4. Install Medaka <a name="Medaka"></a>
+  5. Small changes in scripts <a name="Smallchangesinscripts"></a>
+    5.1 Filename: dependencies.sh <a name="Filename:dependencies.sh"></a>
+    5.2 Filename: ssumi_std.sh <a name="Filename:ssumi_std.sh"></a>
+    5.3 Filename: umi_binning.sh <a name="Filename:umi_binning.sh"></a>
+
+# Installation <a name="Installation"></a>
+## Install longread umi <a name="Installlongreadumi"></a>
 
   1. download install_conda.sh: https://github.com/SorenKarst/longread_umi
   2. change porechop path in install_conda.sh: 
