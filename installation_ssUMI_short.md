@@ -67,8 +67,10 @@ ln -s usearch6.0.98_i86linux32 usearch
 $ ls -l usearch
 lrwxr-xr-x 1 robert admin 26 2012-07-19 08:55 usearch -> usearch6.0.98_i86linux32
  ```
-   3. Make sure the 
-# Install Vsearch <a name="Vsearch"></a>
+   3. Make sure the
+      
+<a name="Vsearch"></a>
+# Install Vsearch 
 Vsearch is the free version of 64bit Usearch sort of speak.  
 For more info, detailed download and installtion instructions go to [VSEARCHgit](https://github.com/torognes/vsearch)  
 Source distribution [all versions](https://github.com/torognes/vsearch/releases)
@@ -84,7 +86,9 @@ cd vsearch-2.23.0
 make
 make install  # as root or sudo make install
 ```
-# install Medaka <a name="Medaka"></a>
+
+<a name="Medaka"></a>
+# install Medaka  
 
 **Installation via pip env**
 Bioinformatic tools are beeing installed in a central folder with symlinks to $PATH, in this case in /usr/local/bioinfo.
@@ -110,7 +114,8 @@ The scripts are found in the $script_path/ (see ## move to ssUMI) folder of the 
 General changes can be found in the github [Zielslab repo](https://github.com/ZielsLab/ssUMI).  
 Other changes and optimizations are made by the mycology lab for fitting to the slightly changes in wet lab approach compared to the labwork used by the original authors.
 
-## Filename: dependencies.sh <a name="Filenamedependencies"></a>
+<a name="Filenamedependencies"></a>
+## Filename: dependencies.sh  
 
 Adjust $PATH of following dependencies  
 
@@ -120,7 +125,8 @@ Adjust $PATH of following dependencies
 |Vsearch   | export VSEARCH="/path/to/vsearch"  |
 |Medaka   | export MEDAKA_ENV_START="source /path/to/medaka/bin/activate"   |
 
-## Filename: ssumi_std.sh <a name="Filenamessumistd"></a>
+<a name="Filenamessumistd"></a>
+## Filename: ssumi_std.sh   
 
   - LINE 222: for correct directory
 ```bash
@@ -164,8 +170,8 @@ longread_umi polish_racon \
 tar -czvf ${CON_DIR2}/mapping.tar.gz ${CON_DIR2}/mapping/umi*bins --remove-files
 rmdir ${CON_DIR2}/mapping
 ```
-
-## Filename: umi_binning.sh <a name="Filenameumibinning"></a>
+<a name="Filenameumibinning"></a>
+## Filename: umi_binning.sh   
   - Last line of the scirpt
 ```bash
 tail -n +1 > $BINNING_DIR/pass_bins.txt
