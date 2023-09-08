@@ -1,15 +1,15 @@
 **Table of contents**
 
-  1. [Installation](#Installation) 
-    1.1 [Install](#Installlongreadumi)
-    1.2 [Move from UMI to ssUMI pipeline](#MovefromUMItossUMIpipeline)
-  2. [Install Usearch](#Usearch)
-  3. [Install Vsearch](#Vsearch)
-  4. [Install Medaka](#Medaka)
-  5. [Small changes in scripts](#Smallchangesinscripts)
-    5.1 [Filename: dependencies.sh](#Filename:dependencies.sh)
-    5.2 [Filename: ssumi_std.sh](#Filename:ssumi_std.sh)
-    5.3 [Filename: umi_binning.sh](#Filename:umi_binning.sh) 
+  1. [Installation](#Installation)   
+    1.1 [Install](#Installlongreadumi)  
+    1.2 [Move from UMI to ssUMI pipeline](#MovefromUMItossUMIpipeline)  
+  2. [Install Usearch](#Usearch)  
+  3. [Install Vsearch](#Vsearch)  
+  4. [Install Medaka](#Medaka)  
+  5. [Small changes in scripts](#Smallchangesinscripts)  
+    5.1 [Filename: dependencies.sh](#Filename:dependencies.sh)  
+    5.2 [Filename: ssumi_std.sh](#Filename:ssumi_std.sh)  
+    5.3 [Filename: umi_binning.sh](#Filename:umi_binning.sh)
 
 # Installation <a name="Installation"></a>
 ## Install longread umi <a name="Installlongreadumi"></a>
@@ -108,6 +108,7 @@ General changes can be found in the github [Zielslab repo](https://github.com/Zi
 Other changes and optimizations are made by the mycology lab for fitting to the slightly changes in wet lab approach compared to the labwork used by the original authors.
 
 ## Filename: dependencies.sh <a name="Filename:dependencies.sh"></a>
+
 Adjust $PATH of following dependencies  
 
 |  Tool |Line replace   |
