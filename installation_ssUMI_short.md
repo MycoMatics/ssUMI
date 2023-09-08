@@ -12,8 +12,9 @@
     5.3 [Filename: umi_binning.sh](#Filenameumibinning)
      
 <a name="Installation"></a>
-# Installation 
-## Install longread umi (from Karst et.al) <a name="Installlongreadumi"></a>
+# Installation
+<a name="Installlongreadumi"></a>
+## Install longread umi 
 
   1. download install_conda.sh: https://github.com/SorenKarst/longread_umi
   2. change porechop path in install_conda.sh: 
