@@ -24,6 +24,7 @@ $CONDA_PREFIX/bin/pip install \
   4. run installation script
 
 ## Move from UMI to ssUMI pipeline <a name="MovefromUMItossUMIpipeline"></a>
+
   1. determine prefix  
 Determine the location of the package contents. For instance, if longread_umi was installed via conda, type:
 ```bash
