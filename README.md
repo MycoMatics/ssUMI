@@ -58,7 +58,7 @@ chmod +x $script_path/scripts/*
   4. Replace the longread_umi test_Data folder with the new (ssUMI) scripts folder
 
 ```bash
-mv $script_path/test_Data $script_path/test_data_old
+mv $script_path/test_data $script_path/test_data_old
 mv path/to/ssUMI/test_data $script_path/
 ```
 <a name="Usearch"></a>
