@@ -44,7 +44,7 @@ conda activate longread_umi
 script_path="`echo "$CONDA_PREFIX/longread_umi"`"
 conda deactivate
 ```  
-  2. clone longread_umi
+  2. clone longread_umi Ziels version
 ```bash
 git clone https://github.com/ZielsLab/ssUMI.git
 ```
