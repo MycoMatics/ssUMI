@@ -32,7 +32,8 @@ $CONDA_PREFIX/bin/pip install \
   git+https://github.com/rrwick/Porechop.git@master#egg=porechop
 ```
   3. delete medaka from yml conda
-  4. run installation script
+  4. update cutadapt to v4.6
+  5. run installation script
 
 <a name="MovefromUMItossUMIpipeline"></a>
 ## Move from UMI to ssUMI pipeline  
