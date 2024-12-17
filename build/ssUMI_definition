@@ -126,9 +126,7 @@ From: ubuntu:22.04
     pip install medaka
     medaka tools download_models
     conda deactivate
-    export MEDAKA_ENV_START="conda activate medaka"
-    MEDAKA_ENV_START_PATH="conda activate medaka"
-
+    export MEDAKA_ENV_START='source /opt/conda/etc/profile.d/conda.sh && conda activate medaka'
 
     
     # Update dependencies.sh paths
