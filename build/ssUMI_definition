@@ -78,8 +78,7 @@ From: ubuntu:22.04
     # Install Conda and the longread_umi environment
     cd /root
 	wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/install_conda.sh
-	wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/dependencies.sh
-	chmod +x install_conda.sh dependencies.sh
+	chmod +x install_conda.sh
     bash ./install_conda.sh
     # Initialize conda for the current shell
     eval "$(/opt/conda/bin/conda shell.bash hook)"
@@ -100,6 +99,7 @@ From: ubuntu:22.04
     # Download altered scripts
     wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/ssumi_std.sh -O ${script_path}/ssumi_std.sh
     wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/umi_binning.sh -O ${script_path}/umi_binning.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/dependencies.sh -O ${script_path}/dependencies.sh
 
     chmod -R +x ${script_path}/scripts/
     mv ${script_path}/test_data ${script_path}/test_data_old
@@ -116,7 +116,6 @@ From: ubuntu:22.04
     conda deactivate
     MEDAKA_ENV_START_PATH="$CONDA_PREFIX/envs/medaka/bin/activate"
     
-    # Update dependencies.sh paths accordingly
     # Update dependencies.sh paths
     sed -i "s|export VSEARCH=\"path/to/vsearch\"|export VSEARCH=\"${VSEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
     sed -i "s|export USEARCH=\"path/to/usearch\"|export USEARCH=\"${USEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
