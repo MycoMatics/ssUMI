@@ -41,7 +41,6 @@ From: ubuntu:22.04
         libtool \
         pkg-config \
         unzip \
-        bgzip \
         bzip2 \
         zlib1g-dev \
         libbz2-dev \
@@ -108,14 +107,16 @@ From: ubuntu:22.04
 
     # Create and install Medaka in a Python venv
     cd /root
-    python3 -m venv medaka --prompt "medaka"
-    source medaka/bin/activate
+     # Create and install Medaka in a conda environment with Python 3.9
+    conda create -n medaka python=3.9 -y
+    conda activate medaka
     pip install --upgrade pip
     pip install medaka
     medaka tools download_models
-    deactivate
-    MEDAKA_ENV_START_PATH="/root/medaka/bin/activate"
-
+    conda deactivate
+    MEDAKA_ENV_START_PATH="$CONDA_PREFIX/envs/medaka/bin/activate"
+    
+    # Update dependencies.sh paths accordingly
     # Update dependencies.sh paths
     sed -i "s|export VSEARCH=\"path/to/vsearch\"|export VSEARCH=\"${VSEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
     sed -i "s|export USEARCH=\"path/to/usearch\"|export USEARCH=\"${USEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
