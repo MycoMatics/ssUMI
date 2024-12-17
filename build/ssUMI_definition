@@ -53,7 +53,19 @@ From: ubuntu:22.04
         python3-venv \
         git-lfs \
         tabix \
+        util-linux \
+        bsdmainutils \
+        locales \
         && rm -rf /var/lib/apt/lists/*
+
+    # Configure locales
+    sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
+    locale-gen en_US.UTF-8
+    update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
+    # Ensure environment variables for locale
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
 
     # Install USEARCH (example binary)
     wget https://drive5.com/downloads/usearch10.0.240_i86linux32.gz
@@ -97,9 +109,9 @@ From: ubuntu:22.04
     mv ${SSUMI_PATH}/scripts ${script_path}/
 
     # Download altered scripts
-    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/ssumi_std.sh -O ${script_path}/ssumi_std.sh
-    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/umi_binning.sh -O ${script_path}/umi_binning.sh
-    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/dependencies.sh -O ${script_path}/dependencies.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/ssumi_std.sh -O ${script_path}/scripts/ssumi_std.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/umi_binning.sh -O ${script_path}/scripts/umi_binning.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/dependencies.sh -O ${script_path}/scripts/dependencies.sh
 
     chmod -R +x ${script_path}/scripts/
     mv ${script_path}/test_data ${script_path}/test_data_old
@@ -114,12 +126,14 @@ From: ubuntu:22.04
     pip install medaka
     medaka tools download_models
     conda deactivate
-    MEDAKA_ENV_START_PATH="$CONDA_PREFIX/envs/medaka/bin/activate"
+    export MEDAKA_ENV_START="conda activate medaka"
+    MEDAKA_ENV_START_PATH="conda activate medaka"
+
+
     
     # Update dependencies.sh paths
-    sed -i "s|export VSEARCH=\"path/to/vsearch\"|export VSEARCH=\"${VSEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
-    sed -i "s|export USEARCH=\"path/to/usearch\"|export USEARCH=\"${USEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
-    sed -i "s|export MEDAKA_ENV_START=\"source path/to/medaka/bin/activate\"|export MEDAKA_ENV_START=\"source ${MEDAKA_ENV_START_PATH}\"|" "${script_path}/scripts/dependencies.sh"
+    sed -i 's|export VSEARCH="path/to/vsearch"|export VSEARCH="/usr/local/bin/vsearch"|' "${script_path}/scripts/dependencies.sh"
+    sed -i 's|export USEARCH="path/to/usearch"|export USEARCH="/usr/local/bin/usearch"|' "${script_path}/scripts/dependencies.sh"
 
     # Check that replacements worked
     grep 'VSEARCH=' "${script_path}/scripts/dependencies.sh"
