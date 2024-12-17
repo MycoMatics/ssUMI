@@ -41,6 +41,7 @@ From: ubuntu:22.04
         libtool \
         pkg-config \
         unzip \
+        bgzip \
         bzip2 \
         zlib1g-dev \
         libbz2-dev \
