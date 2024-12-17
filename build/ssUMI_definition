@@ -77,7 +77,7 @@ From: ubuntu:22.04
 
     # Install Conda and the longread_umi environment
     cd /root
-	wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/install_conda.sh
+	wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/install_conda.sh
 	wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/dependencies.sh
 	chmod +x install_conda.sh dependencies.sh
     bash ./install_conda.sh
