@@ -21,7 +21,7 @@ export PORECHOP_UMI=porechop
 export FILTLONG=filtlong
 export BWA=bwa
 export USEARCH="path/to/usearch"
-export MEDAKA_ENV_START="conda activate medaka"
+export MEDAKA_ENV_START="source /opt/conda/etc/profile.d/conda.sh && conda activate medaka"
 export MEDAKA_ENV_STOP="conda deactivate"
 export VSEARCH="path/to/vsearch"
 
