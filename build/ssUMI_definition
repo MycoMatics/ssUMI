@@ -1,0 +1,135 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    Author "Glen Dierickx"
+    Version "0.1"
+    Description "Containerized environment for the longread_umi pipeline with ssUMI modifications."
+
+%help
+    This container provides an environment to run the longread_umi pipeline with the ssUMI updates.
+    After building:
+      apptainer exec longread_umi.sif bash
+    To activate conda environment:
+      conda activate longread_umi
+
+%environment
+    # Ensure conda, python, etc. are on the PATH
+    export PATH="/opt/conda/bin:${PATH}"
+
+%post
+    set -e
+    export DEBIAN_FRONTEND=noninteractive
+
+    # Update and install all system dependencies
+    apt-get update && apt-get install -y \
+        wget \
+        gnupg \
+        lsb-release \
+        ca-certificates \
+        git \
+        build-essential \
+        curl \
+        gzip \
+        python3 \
+        python3-pip \
+        python3-setuptools \
+        python3-wheel \
+        cmake \
+        autoconf \
+        automake \
+        libtool \
+        pkg-config \
+        unzip \
+        bzip2 \
+        zlib1g-dev \
+        libbz2-dev \
+        liblzma-dev \
+        libffi-dev \
+        libncurses5-dev \
+        libcurl4-gnutls-dev \
+        libssl-dev \
+        python3-all-dev \
+        python3-venv \
+        git-lfs \
+        tabix \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Install USEARCH (example binary)
+    wget https://drive5.com/downloads/usearch10.0.240_i86linux32.gz
+    gunzip usearch10.0.240_i86linux32.gz
+    chmod +x usearch10.0.240_i86linux32
+    ln -s $(pwd)/usearch10.0.240_i86linux32 /usr/local/bin/usearch
+    USEARCH_PATH=/usr/local/bin/usearch
+
+    # Install VSEARCH from source
+    VSEARCH_VERSION="2.29.1"
+    wget "https://github.com/torognes/vsearch/archive/v${VSEARCH_VERSION}.tar.gz" -O /tmp/vsearch-${VSEARCH_VERSION}.tar.gz
+    tar xzf /tmp/vsearch-${VSEARCH_VERSION}.tar.gz -C /opt
+    cd /opt/vsearch-${VSEARCH_VERSION}
+    ./autogen.sh
+    ./configure CFLAGS="-O3" CXXFLAGS="-O3"
+    make ARFLAGS="cr"
+    make install
+    cd /opt
+    rm -rf vsearch-${VSEARCH_VERSION} /tmp/vsearch-${VSEARCH_VERSION}.tar.gz
+    VSEARCH_PATH=$(which vsearch)
+
+    # Install Conda and the longread_umi environment
+    cd /root
+	wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/install_conda.sh
+	wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/dependencies.sh
+	chmod +x install_conda.sh dependencies.sh
+    bash ./install_conda.sh
+    # Initialize conda for the current shell
+    eval "$(/opt/conda/bin/conda shell.bash hook)"
+
+    # Clone ssUMI repository
+    git clone https://github.com/ZielsLab/ssUMI.git /root/ssUMI
+    SSUMI_PATH=/root/ssUMI
+
+    # Activate the environment to get the pipeline path
+    conda activate longread_umi
+    script_path="${CONDA_PREFIX}/longread_umi"
+    conda deactivate
+
+    # Replace the original scripts folder with the ssUMI scripts
+    mv ${script_path}/scripts ${script_path}/scripts_old
+    mv ${SSUMI_PATH}/scripts ${script_path}/
+
+    # Download altered scripts
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/ssumi_std.sh -O ${script_path}/ssumi_std.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/umi_binning.sh -O ${script_path}/umi_binning.sh
+
+    chmod -R +x ${script_path}/scripts/
+    mv ${script_path}/test_data ${script_path}/test_data_old
+    mv ${SSUMI_PATH}/test_data ${script_path}/
+
+    # Create and install Medaka in a Python venv
+    cd /root
+    python3 -m venv medaka --prompt "medaka"
+    source medaka/bin/activate
+    pip install --upgrade pip
+    pip install medaka
+    medaka tools download_models
+    deactivate
+    MEDAKA_ENV_START_PATH="/root/medaka/bin/activate"
+
+    # Update dependencies.sh paths
+    sed -i "s|export VSEARCH=\"path/to/vsearch\"|export VSEARCH=\"${VSEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
+    sed -i "s|export USEARCH=\"path/to/usearch\"|export USEARCH=\"${USEARCH_PATH}\"|" "${script_path}/scripts/dependencies.sh"
+    sed -i "s|export MEDAKA_ENV_START=\"source path/to/medaka/bin/activate\"|export MEDAKA_ENV_START=\"source ${MEDAKA_ENV_START_PATH}\"|" "${script_path}/scripts/dependencies.sh"
+
+    # Check that replacements worked
+    grep 'VSEARCH=' "${script_path}/scripts/dependencies.sh"
+    grep 'USEARCH=' "${script_path}/scripts/dependencies.sh"
+    grep 'MEDAKA_ENV_START=' "${script_path}/scripts/dependencies.sh"
+
+
+%runscript
+    # Source conda environment configuration
+    . /opt/conda/etc/profile.d/conda.sh
+    conda activate longread_umi
+
+    # Now run longread_umi with passed arguments
+    exec longread_umi "$@"
