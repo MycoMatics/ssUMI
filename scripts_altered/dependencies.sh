@@ -22,7 +22,7 @@ export FILTLONG=filtlong
 export BWA=bwa
 export USEARCH="path/to/usearch"
 export MEDAKA_ENV_START="conda activate medaka"
-export MEDAKA_ENV_STOP="deactivate"
+export MEDAKA_ENV_STOP="conda deactivate"
 export VSEARCH="path/to/vsearch"
 
 # longread_umi paths
