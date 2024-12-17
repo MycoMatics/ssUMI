@@ -1,10 +1,10 @@
 #!/bin/bash
 # DESCRIPTION
-#    Install longread_umi as conda environment.
+#    Install longread_umi as conda environment, non-interactively.
 #
 # IMPLEMENTATION
-#    author   Søren Karst (sorenkarst@gmail.com)
-#             Ryan Ziels (ziels@mail.ubc.ca)
+#    author   Søren Karst (sorenkarst@gmail.com), Ryan Ziels (ziels@mail.ubc.ca)
+#    modified by glen dierickx for non-interactive installation
 #    license  GNU General Public License
 
 # Terminal input
@@ -12,38 +12,21 @@ BRANCH=${1:-master} # Default to master branch
 
 # Check conda installation ----------------------------------------------------
 if [[ -z $(which conda) ]]; then
-  # Ask to install
-  read -t 1 -n 10000 discard # Clears stdin before read
-  read \
-    -n 1 \
-    -p "Conda not found. Install miniconda3 (y/n)? " \
-    ASK_CONDA_INSTALL    
-  
-  if [ "$ASK_CONDA_INSTALL" == "y" ]; then
-    # Install conda
-    [ -f Miniconda3-latest-Linux-x86_64.sh ] ||\
-      wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-    bash ./Miniconda3-latest-Linux-x86_64.sh   
-  else
-    echo ""
-	echo "Installation aborted..."
-    echo ""
-    exit 1 
-  fi
+  # Install conda non-interactively
+  [ -f Miniconda3-latest-Linux-x86_64.sh ] || \
+    wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+  bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda
+  export PATH="/opt/conda/bin:$PATH"
 else
-  echo ""
   echo "Conda found"
   echo "version: $(conda -V)"
-  echo ""
 fi
 
-# Install longread-UMI conda env ----------------------------------------------
 echo ""
-echo "Installing longread_umi conda environment.."
+echo "Installing longread_umi conda environment..."
 echo ""
 
 # Define conda env yml
-# medaka=0.11.5 not installed
 echo "name: longread_umi
 channels:
 - conda-forge
@@ -63,108 +46,58 @@ dependencies:
 - git
 " > ./longread_umi.yml
 
-# Install conda env
+# Install the environment
 conda env create -f ./longread_umi.yml
 
 eval "$(conda shell.bash hook)"
-conda activate longread_umi || source activate longread_umi
+conda activate longread_umi
 
 # Install porechop
-# original: git+https://github.com/rrwick/Porechop.git
-
 $CONDA_PREFIX/bin/pip install \
   git+https://github.com/rrwick/Porechop.git@master#egg=porechop
 
-# Download longread-UMI from git
+# Download longread-UMI pipeline
 git clone \
   --branch "$BRANCH" \
   https://github.com/SorenKarst/longread-UMI-pipeline.git \
   $CONDA_PREFIX/longread_umi
 
 # Modify adapters.py
+# Adjust Python site-packages path if needed. Assuming Python 3.10 or newer:
+PYTHON_SITE=$(python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
 cp \
   $CONDA_PREFIX/longread_umi/scripts/adapters.py \
-  $CONDA_PREFIX/lib/python3.6/site-packages/porechop/adapters.py
+  $PYTHON_SITE/porechop/adapters.py
 
-# Create links to pipeline
+# Make scripts executable and symlink main script
 find \
   $CONDA_PREFIX/longread_umi/ \
   -name "*.sh" \
   -exec chmod +x {} \;
-  
+
 ln -s \
   $CONDA_PREFIX/longread_umi/longread_umi.sh \
   $CONDA_PREFIX/bin/longread_umi
-  
-  
-# Create link to usearch installation
-read -t 1 -n 10000 discard
-read \
-  -p "Type path to usearch excutable and press enter:  " \
-  USEARCH_PATH
 
-USEARCH_PATH_F=$(sed -e 's/^"//' -e 's/"$//' <<< "$USEARCH_PATH")
-unset USEARCH_PATH
+# Set USEARCH path non-interactively
+# Adjust this if your USEARCH is at a different location
+USEARCH_PATH_F="/usr/local/bin/usearch"
+chmod +x "$USEARCH_PATH_F"
+ln -s "$USEARCH_PATH_F" $CONDA_PREFIX/bin/usearch
 
-if [[ ! -x "$USEARCH_PATH_F" ]]; then
-  echo "File '$USEARCH_PATH_F' is not executable or found."
-  read -t 1 -n 10000 discard
-  read \
-    -n 1 \
-    -p "Attempt to make '$USEARCH_PATH_F' excutable (y/n)? " \
-    ASK_USEARCH_X    
-    echo ""
-  if [ "$ASK_USEARCH_X" == "y" ]; then
-    chmod +x "$USEARCH_PATH_F"
-  else
-    echo ""
-    echo "Installation aborted ..."
-    echo ""
-    exit 1 
-  fi
-fi
-
-
-ln -s \
-  "$USEARCH_PATH_F" \
-  $CONDA_PREFIX/bin/usearch  
-  
 # Check installation
 if [[ -z $(which longread_umi) ]]; then
-  echo ""
-  echo "Can't locate longread_umi"
   echo "longread_umi installation failed..."
-  echo ""
+  exit 1
 else
-  echo ""
   echo "longread_umi installation success..."
-  echo ""
   echo "Path to conda environment: $CONDA_PREFIX"
   echo "Path to pipeline files: $CONDA_PREFIX/longread_umi"
-  echo ""
-  echo "Initiate conda and refresh terminal:"
-  echo "conda init; source ~/.bashrc"
-  echo ""
 fi
 
 conda deactivate
 
 # Cleanup
-read -t 1 -n 10000 discard
-read \
-  -n 1 \
-  -p "Cleanup install files (y/n)? " \
-  CLEAN_INSTALL
-  echo ""
-  
-if [ "$CLEAN_INSTALL" == "y" ]; then
-  if [ -f Miniconda3-latest-Linux-x86_64.sh  ]; then 
-    rm -f ./Miniconda3-latest-Linux-x86_64.sh
-  fi
-  if [ -f install_conda.sh  ]; then 
-    rm -f ./install_conda.sh
-  fi
-  if [ -f longread_umi.yml  ]; then 
-    rm -f ./longread_umi.yml
-  fi
-fi
+rm -f ./Miniconda3-latest-Linux-x86_64.sh
+rm -f ./longread_umi.yml
+rm -f ./install_conda.sh
