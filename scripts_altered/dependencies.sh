@@ -20,10 +20,10 @@ export CUTADAPT=cutadapt
 export PORECHOP_UMI=porechop
 export FILTLONG=filtlong
 export BWA=bwa
-export USEARCH="path/to/usearch" #change to your USEARCH path
-export MEDAKA_ENV_START="source path/to/medaka/bin/activate" #change to your medaka venv path
+export USEARCH="path/to/usearch"
+export MEDAKA_ENV_START="$CONDA_PREFIX/envs/medaka/bin/activate"
 export MEDAKA_ENV_STOP="deactivate"
-export VSEARCH="path/to/vsearch" #change to your VSEARCH path
+export VSEARCH="path/to/vsearch"
 
 # longread_umi paths
 #export REF_CURATED=$LONGREAD_UMI_PATH/scripts/zymo-ref-uniq_2019-10-28.fa
