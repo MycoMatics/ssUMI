@@ -12,14 +12,11 @@ On the one hand solving installation issues, on the other hand fitting it to our
                 
 1. [Installation](#Installation)   
                     1.1 [Install longread umi](#Installlongreadumi)  
-                    1.2 [Move from UMI to ssUMI pipeline](#MovefromUMItossUMIpipeline)  
-2. [Install Usearch](#Usearch)  
-3. [Install Vsearch](#Vsearch)  
-4. [Install Medaka](#Medaka)  
-5. [Small changes in scripts](#Smallchangesinscripts)  
-                    5.1 [Filename: dependencies.sh](#Filenamedependencies)  
-                    5.2 [Filename: ssumi_std.sh](#Filenamessumistd)  
-                    5.3 [Filename: umi_binning.sh](#Filenameumibinning)
+                    1.2 [Move from UMI to ssUMI pipeline](#MovefromUMItossUMIpipeline)
+2. [Small changes in scripts](#Smallchangesinscripts)  
+                    2.1 [Filename: dependencies.sh](#Filenamedependencies)  
+                    2.2 [Filename: ssumi_std.sh](#Filenamessumistd)  
+                    2.3 [Filename: umi_binning.sh](#Filenameumibinning)
      
 <a name="Installation"></a>
 # Installation
