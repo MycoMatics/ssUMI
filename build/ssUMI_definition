@@ -123,6 +123,7 @@ From: ubuntu:22.04
     conda create -n medaka python=3.9 -y
     conda activate medaka
     pip install --upgrade pip
+    pip install pyabpoa
     pip install medaka
     medaka tools download_models
     conda deactivate
