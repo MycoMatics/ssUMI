@@ -1,3 +1,4 @@
+# Specific for the HPC of UGent - this should be run on a Scratch filesystem
 # Setting permissions to build an apptainer as non root user
 export APPTAINER_TMPDIR=/tmp
 mkdir -p $APPTAINER_TMPDIR
@@ -7,3 +8,4 @@ wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/bui
 apptainer build ssUMI.sif ssUMI_definition
 # run with appropriate flags
 apptainer run ssUMI.sif ssumi_std -h
+# when running pipeline with real data ensure plenty of disk space and a high file limit
