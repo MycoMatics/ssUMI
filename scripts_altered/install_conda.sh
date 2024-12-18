@@ -52,6 +52,16 @@ conda env create -f ./longread_umi.yml
 eval "$(conda shell.bash hook)"
 conda activate longread_umi
 
+# List of dependencies to check
+DEPENDENCIES=("seqtk" "parallel" "racon" "minimap2" "gawk" "cutadapt" "filtlong" "bwa" "samtools" "bcftools" "git")
+
+# Check if each dependency is installed and available on PATH
+for dep in "${DEPENDENCIES[@]}"; do
+  if [[ -z $(which $dep) ]]; then
+    echo "$dep not found in PATH. Exiting..."
+    exit 1
+  fi
+done
 # Install porechop
 $CONDA_PREFIX/bin/pip install \
   git+https://github.com/rrwick/Porechop.git@master#egg=porechop
