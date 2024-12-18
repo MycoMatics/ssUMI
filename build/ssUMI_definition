@@ -124,7 +124,7 @@ From: ubuntu:22.04
     conda activate medaka
     pip install --upgrade pip
     pip install pyabpoa
-    conda install -c bioconda samtools
+    conda install -c bioconda samtools minimap2
     pip install medaka
     medaka tools download_models
     conda deactivate
