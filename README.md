@@ -1,5 +1,6 @@
 # ssUMI apptainer branch
-This branch of the pipeline runs in a containerized environment for ease of use using [Apptainer/Singularity](https://github.com/apptainer/apptainer)
+This branch of the pipeline runs in a containerized environment for ease of use using [Apptainer/Singularity](https://github.com/apptainer/apptainer) .
+
 Original pipeline: https://github.com/SorenKarst/longread_umi  
 ssUMi pipeline: https://github.com/ZielsLab/ssUMI
 
