@@ -3,7 +3,7 @@ From: ubuntu:22.04
 
 %labels
     Author "Glen Dierickx"
-    Version "0.1"
+    Version "1.0"
     Description "Containerized environment for the longread_umi pipeline with ssUMI modifications."
 
 %help
@@ -125,7 +125,7 @@ From: ubuntu:22.04
     pip install --upgrade pip
     pip install pyabpoa
     conda install -c bioconda samtools minimap2
-    pip install medaka
+    pip install medaka==1.12.1
     medaka tools download_models
     conda deactivate
 
