@@ -1,0 +1,9 @@
+# Setting permissions to build an apptainer as non root user
+export APPTAINER_TMPDIR=/tmp
+mkdir -p $APPTAINER_TMPDIR
+chmod 777 /tmp
+# build the container using the definition file
+wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/build/ssUMI_definition
+apptainer build ssUMI.sif ssUMI_definition
+# run with appropriate flags
+apptainer run ssUMI.sif ssumi_std -h
