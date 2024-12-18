@@ -124,21 +124,10 @@ From: ubuntu:22.04
     conda activate medaka
     pip install --upgrade pip
     pip install pyabpoa
+    conda install -c bioconda samtools
     pip install medaka
     medaka tools download_models
     conda deactivate
-    export MEDAKA_ENV_START='source /opt/conda/etc/profile.d/conda.sh && conda activate medaka'
-
-    
-    # Update dependencies.sh paths
-    sed -i 's|export VSEARCH="path/to/vsearch"|export VSEARCH="/usr/local/bin/vsearch"|' "${script_path}/scripts/dependencies.sh"
-    sed -i 's|export USEARCH="path/to/usearch"|export USEARCH="/usr/local/bin/usearch"|' "${script_path}/scripts/dependencies.sh"
-
-    # Check that replacements worked
-    grep 'VSEARCH=' "${script_path}/scripts/dependencies.sh"
-    grep 'USEARCH=' "${script_path}/scripts/dependencies.sh"
-    grep 'MEDAKA_ENV_START=' "${script_path}/scripts/dependencies.sh"
-
 
 %runscript
     # Source conda environment configuration
