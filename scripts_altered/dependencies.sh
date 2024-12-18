@@ -9,21 +9,21 @@
 
 # Program paths
 
-export SEQTK=seqtk
-export GNUPARALLEL=parallel
-export RACON=racon
-export MINIMAP2=minimap2
-export GAWK=gawk
-export SAMTOOLS=samtools
-export BCFTOOLS=bcftools
-export CUTADAPT=cutadapt
-export PORECHOP_UMI=porechop
-export FILTLONG=filtlong
-export BWA=bwa
-export USEARCH="path/to/usearch"
+export SEQTK="/opt/conda/envs/longread_umi/bin/seqtk"
+export GNUPARALLEL="/opt/conda/envs/longread_umi/bin/parallel"
+export RACON="/opt/conda/envs/longread_umi/bin/racon"
+export MINIMAP2="/opt/conda/envs/longread_umi/bin/minimap2"
+export GAWK="/opt/conda/envs/longread_umi/bin/gawk"
+export SAMTOOLS="/opt/conda/envs/longread_umi/bin/samtools"
+export BCFTOOLS="/opt/conda/envs/longread_umi/bin/bcftools"
+export CUTADAPT="/opt/conda/envs/longread_umi/bin/cutadapt"
+export PORECHOP_UMI="/opt/conda/envs/longread_umi/bin/porechop"
+export FILTLONG="/opt/conda/envs/longread_umi/bin/filtlong"
+export BWA="/opt/conda/envs/longread_umi/bin/bwa"
+export USEARCH="/opt/conda/envs/longread_umi/bin/usearch"
 export MEDAKA_ENV_START="source /opt/conda/etc/profile.d/conda.sh && conda activate medaka"
 export MEDAKA_ENV_STOP="conda deactivate"
-export VSEARCH="path/to/vsearch"
+export VSEARCH="/opt/conda/envs/longread_umi/bin/vsearch"
 
 # longread_umi paths
 #export REF_CURATED=$LONGREAD_UMI_PATH/scripts/zymo-ref-uniq_2019-10-28.fa
