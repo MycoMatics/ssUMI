@@ -20,10 +20,10 @@ export CUTADAPT="/opt/conda/envs/longread_umi/bin/cutadapt"
 export PORECHOP_UMI="/opt/conda/envs/longread_umi/bin/porechop"
 export FILTLONG="/opt/conda/envs/longread_umi/bin/filtlong"
 export BWA="/opt/conda/envs/longread_umi/bin/bwa"
-export USEARCH="/opt/conda/envs/longread_umi/bin/usearch"
+export USEARCH="/usr/local/bin/uvsearch"
 export MEDAKA_ENV_START="source /opt/conda/etc/profile.d/conda.sh && conda activate medaka"
 export MEDAKA_ENV_STOP="conda deactivate"
-export VSEARCH="/opt/conda/envs/longread_umi/bin/vsearch"
+export VSEARCH="/usr/local/bin/vsearch"
 
 # longread_umi paths
 #export REF_CURATED=$LONGREAD_UMI_PATH/scripts/zymo-ref-uniq_2019-10-28.fa
