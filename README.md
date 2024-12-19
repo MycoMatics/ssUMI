@@ -218,4 +218,32 @@ cat $UMI_DIR/umi_ref.fa <($SEQTK seq -r $UMI_DIR/umi_ref.fa |\
        print substr($0, 29, 28)  > BD"/umi_ref_b2.fa";  
      }'
 ```
-# TODO TEST RUN
+# TEST RUN
+```shell
+# download test data and unzip
+wget -O bc43.fastq.gz https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/test_data/bc43.fastq.gz
+gunzip bc43.fastq.gz
+
+# Make sure you have ssUMI.sif in the working dir or point to its location
+apptainer run ssUMI.sif  ssumi_std \
+  -d barcode43.fastq \
+  -v 3 \
+  -o bc43_out \
+  -s 200 \
+  -e 200 \
+  -E 0.2 \
+  -m 500 \
+  -M 1200 \
+  -f GTATCGTGTAGAGACTGCGTAGG \
+  -F TGTACACACCGCCCGTCG \
+  -r AGTGATCGAGTCAGTGCGAGTG \
+  -R TCGCCTSCSCTTANTDATATGC \
+  -c 3 \
+  -p 2 \
+  -q r1041_e82_400bps_sup_v5.0.0 \
+  -t 10 \
+  -T 2
+```
+# The test data should run in <10 minutes
+The main output is the fasta file containing XX UMIs
+an example file can be found at [test_data]()
