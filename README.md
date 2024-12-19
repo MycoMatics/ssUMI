@@ -226,7 +226,7 @@ gunzip bc43.fastq.gz
 
 # Make sure you have ssUMI.sif in the working dir or point to its location
 apptainer run ssUMI.sif  ssumi_std \
-  -d barcode43.fastq \
+  -d bc43.fastq \
   -v 3 \
   -o bc43_out \
   -s 200 \
@@ -241,9 +241,9 @@ apptainer run ssUMI.sif  ssumi_std \
   -c 3 \
   -p 2 \
   -q r1041_e82_400bps_sup_v5.0.0 \
-  -t 10 \
-  -T 2
+  -t 12 \
+  -T 4
 ```
-# The test data should run in <10 minutes
-The main output is the fasta file containing XX UMIs
-an example file can be found at [test_data]()
+The test data should run in <10 minutes (more if using a single thread) .
+The main output is the fasta file [consensus_raconx3_medakax2_raconx1.fa](./test_data/consensus_raconx3_medakax2_raconx1.fa) containing 58 UMIs.
+
