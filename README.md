@@ -6,7 +6,7 @@ ssUMi pipeline: https://github.com/ZielsLab/ssUMI
 In this repo you'll find an overview of the changes to both installation process and scripts to the above pipelines.
 On the one hand solving installation issues, on the other hand fitting it to our wetlab conditions.
 
-
+For an easier, containerized workflow see the [Apptainer branch](https://github.com/MycoMatics/ssUMI/tree/Apptainer) .
 **Table of contents**
                 
 1. [Installation](#Installation)   
@@ -24,6 +24,7 @@ On the one hand solving installation issues, on the other hand fitting it to our
 # Installation
 <a name="Installlongreadumi"></a>
 ## Install longread umi 
+To bypass the steps below, take a look at the [containerized version](https://github.com/MycoMatics/ssUMI/tree/Apptainer) .
 
   1. download install_conda.sh: https://github.com/SorenKarst/longread_umi
   2. change porechop path in install_conda.sh: 
