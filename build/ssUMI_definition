@@ -48,7 +48,6 @@ From: ubuntu:22.04
         libffi-dev \
         libncurses5-dev \
         libcurl4-gnutls-dev \
-        libhts-dev \
         libssl-dev \
         python3-all-dev \
         python3-venv \
@@ -127,7 +126,19 @@ From: ubuntu:22.04
     pip install --upgrade pip
     pip install pyabpoa
 
-    # Install SAMTOOLS from source
+    # Download and build HTSlib
+    HTSLIB_VERSION="1.21"
+    wget "https://github.com/samtools/htslib/archive/refs/tags/${HTSLIB_VERSION}.tar.gz" -O /tmp/htslib-${HTSLIB_VERSION}.tar.gz
+    tar xzf /tmp/htslib-${HTSLIB_VERSION}.tar.gz -C /opt
+    cd /opt/htslib-${HTSLIB_VERSION}
+    autoreconf -fi
+    ./configure CFLAGS="-O3" CXXFLAGS="-O3"
+    make
+    make install
+    cd /opt
+    rm -rf htslib-${HTSLIB_VERSION} /tmp/htslib-${HTSLIB_VERSION}.tar.gz
+
+    # build SAMTOOLS and point it to the system-installed HTSlib
     SAMTOOLS_VERSION="1.21"
     wget "https://github.com/samtools/samtools/archive/refs/tags/${SAMTOOLS_VERSION}.tar.gz" -O /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz
     tar xzf /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz -C /opt
@@ -137,10 +148,9 @@ From: ubuntu:22.04
     make ARFLAGS="cr"
     make install
     cd /opt
-    # Clean up the samtools source and tarball
     rm -rf samtools-${SAMTOOLS_VERSION} /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz
     SAMTOOLS_PATH=$(which samtools)
-
+ 
     conda install -c conda-forge -c bioconda minimap2
     pip install medaka==1.12.1
     medaka tools download_models
