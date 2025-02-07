@@ -109,8 +109,8 @@ From: ubuntu:22.04
     mv ${SSUMI_PATH}/scripts ${script_path}/
 
     # Download altered scripts
-    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/ssumi_std.sh -O ${script_path}/scripts/ssumi_std.sh
-    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/main/scripts_altered/umi_binning.sh -O ${script_path}/scripts/umi_binning.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/ssumi_std.sh -O ${script_path}/scripts/ssumi_std.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/umi_binning.sh -O ${script_path}/scripts/umi_binning.sh
     wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/dependencies.sh -O ${script_path}/scripts/dependencies.sh
 
     chmod -R +x ${script_path}/scripts/
