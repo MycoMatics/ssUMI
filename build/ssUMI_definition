@@ -131,6 +131,7 @@ From: ubuntu:22.04
     wget "https://github.com/samtools/samtools/archive/refs/tags/${SAMTOOLS_VERSION}.tar.gz" -O /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz
     tar xzf /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz -C /opt
     cd /opt/samtools-${SAMTOOLS_VERSION}
+    autoreconf -fi
     ./configure CFLAGS="-O3" CXXFLAGS="-O3"
     make ARFLAGS="cr"
     make install
