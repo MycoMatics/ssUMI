@@ -116,7 +116,6 @@ MINCOLS_DOUBLE=$((2 * UMI_LENGTH - 4))
 MINCOLS=$((UMI_LENGTH - 2))
 
 ### Functions to process the UMI pattern and primers --------------------------------------
-# Forward mapping: convert each IUPAC character to its corresponding regex group.
 declare -A mapF
 mapF[A]="[A]"
 mapF[C]="[C]"
@@ -134,7 +133,7 @@ mapF[H]="[ACT]"
 mapF[V]="[ACG]"
 mapF[N]="[ACGT]"
 
-# Reverse mapping: use complement rules for IUPAC.
+# Reverse mapping: use complement rules for IUPAC (for regex conversion).
 declare -A mapR
 mapR[A]="[T]"
 mapR[C]="[G]"
@@ -152,17 +151,34 @@ mapR[H]="[AGT]"
 mapR[V]="[CGT]"
 mapR[N]="[ACGT]"
 
-# Function to compute the reverse complement of the UMI pattern.
+# Define a raw mapping for computing the plain (non-regex) reverse complement.
+declare -A rawMapR
+rawMapR[A]="T"
+rawMapR[C]="G"
+rawMapR[G]="C"
+rawMapR[T]="A"
+rawMapR[R]="Y"
+rawMapR[Y]="R"
+rawMapR[S]="S"
+rawMapR[W]="W"
+rawMapR[K]="M"
+rawMapR[M]="K"
+rawMapR[B]="V"
+rawMapR[D]="H"
+rawMapR[H]="D"
+rawMapR[V]="B"
+rawMapR[N]="N"
+
+# Function to compute the raw reverse complement of the UMI pattern.
 revcomp_umi() {
   local seq="$1"
   local rc=""
   local i
   for (( i=${#seq}-1; i>=0; i-- )); do
     local c="${seq:$i:1}"
-    # Use the full IUPAC mapping
     case "$c" in
       A|C|G|T|R|Y|S|W|K|M|B|D|H|V|N)
-         rc+="${mapR[$c]}"
+         rc+="${rawMapR[$c]}"
          ;;
       *) rc+="$c" ;; 
     esac
@@ -205,7 +221,7 @@ convert_to_regex() {
     echo "$regex"
 }
 
-# reverse complement the provided UMI_PATTERN using revcomp_umi().
+# Compute the UMI pattern regex.
 UMI_PATTERN_RC=$(revcomp_umi "$UMI_PATTERN")
 forward_regex=$(convert_to_regex "$UMI_PATTERN" "forward")
 reverse_regex=$(convert_to_regex "$UMI_PATTERN_RC" "reverse")
@@ -213,7 +229,7 @@ reverse_regex=$(convert_to_regex "$UMI_PATTERN_RC" "reverse")
 PATTERN="${forward_regex}${reverse_regex}"
 
 # print for troubleshooting
-echo "UMI PATTERN: $UMI_PATTERN $UMI_PATTERN_RC"
+echo "UMI PATTERN: ${UMI_PATTERN}${UMI_PATTERN_RC}"
 echo "UMI PATTERN as regex: $PATTERN"
 
 ### Primer formating
