@@ -128,15 +128,15 @@ From: ubuntu:22.04
 
     # Download and build HTSlib
     HTSLIB_VERSION="1.21"
-    wget "https://github.com/samtools/htslib/archive/refs/tags/${HTSLIB_VERSION}.tar.gz" -O /tmp/htslib-${HTSLIB_VERSION}.tar.gz
-    tar xzf /tmp/htslib-${HTSLIB_VERSION}.tar.gz -C /opt
+    wget "https://github.com/samtools/htslib/releases/download/${HTSLIB_VERSION}/htslib-${HTSLIB_VERSION}.tar.bz2" -O /tmp/htslib-${HTSLIB_VERSION}.tar.bz2
+    tar xjf /tmp/htslib-${HTSLIB_VERSION}.tar.bz2 -C /opt
     cd /opt/htslib-${HTSLIB_VERSION}
     autoreconf -fi
     ./configure CFLAGS="-O3" CXXFLAGS="-O3"
     make
     make install
     cd /opt
-    rm -rf htslib-${HTSLIB_VERSION} /tmp/htslib-${HTSLIB_VERSION}.tar.gz
+    rm -rf htslib-${HTSLIB_VERSION} /tmp/htslib-${HTSLIB_VERSION}.tar.bz2
 
     # build SAMTOOLS and point it to the system-installed HTSlib
     SAMTOOLS_VERSION="1.21"
