@@ -48,6 +48,7 @@ From: ubuntu:22.04
         libffi-dev \
         libncurses5-dev \
         libcurl4-gnutls-dev \
+        libhts-dev \
         libssl-dev \
         python3-all-dev \
         python3-venv \
@@ -132,7 +133,7 @@ From: ubuntu:22.04
     tar xzf /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz -C /opt
     cd /opt/samtools-${SAMTOOLS_VERSION}
     autoreconf -fi
-    ./configure CFLAGS="-O3" CXXFLAGS="-O3"
+    ./configure --with-htslib=system CFLAGS="-O3" CXXFLAGS="-O3"
     make ARFLAGS="cr"
     make install
     cd /opt
