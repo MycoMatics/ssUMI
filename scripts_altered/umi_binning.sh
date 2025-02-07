@@ -116,6 +116,7 @@ MINCOLS_DOUBLE=$((2 * UMI_LENGTH - 4))
 MINCOLS=$((UMI_LENGTH - 2))
 
 ### Functions to process the UMI pattern and primers --------------------------------------
+# Forward mapping: convert each IUPAC character to its corresponding regex group.
 declare -A mapF
 mapF[A]="[A]"
 mapF[C]="[C]"
@@ -133,7 +134,7 @@ mapF[H]="[ACT]"
 mapF[V]="[ACG]"
 mapF[N]="[ACGT]"
 
-# Reverse mapping: use complement rules for IUPAC (for regex conversion).
+# Reverse mapping for regex conversion.
 declare -A mapR
 mapR[A]="[T]"
 mapR[C]="[G]"
@@ -151,7 +152,7 @@ mapR[H]="[AGT]"
 mapR[V]="[CGT]"
 mapR[N]="[ACGT]"
 
-# Define a raw mapping for computing the plain (non-regex) reverse complement.
+# Raw mapping for computing the plain (non-regex) reverse complement.
 declare -A rawMapR
 rawMapR[A]="T"
 rawMapR[C]="G"
@@ -180,7 +181,7 @@ revcomp_umi() {
       A|C|G|T|R|Y|S|W|K|M|B|D|H|V|N)
          rc+="${rawMapR[$c]}"
          ;;
-      *) rc+="$c" ;; 
+      *) rc+="$c" ;;
     esac
   done
   echo "$rc"
@@ -189,7 +190,6 @@ revcomp_umi() {
 # Function to convert a given pattern string into a regex with counts.
 convert_to_regex() {
     local input="$1"
-    local type="$2"  # "forward" or "reverse"
     local regex=""
     local count=0
     local prev=""
@@ -201,35 +201,31 @@ convert_to_regex() {
          count=$((count+1))
        else
          if [ -n "$prev" ]; then
-           if [ "$type" == "forward" ]; then
-              regex+="${mapF[$prev]}{$count}"
-           else
-              regex+="${mapR[$prev]}{$count}"
-           fi
+           regex+="${mapF[$prev]}{$count}"
          fi
          prev="$char"
          count=1
        fi
     done
     if [ -n "$prev" ]; then
-      if [ "$type" == "forward" ]; then
          regex+="${mapF[$prev]}{$count}"
-      else
-         regex+="${mapR[$prev]}{$count}"
-      fi
     fi
     echo "$regex"
 }
 
-# Compute the UMI pattern regex.
+# Assume UMI_PATTERN is already defined (or supplied via other means).
+# For example, you could set it as:
+# UMI_PATTERN="TTTVVVVTTVVVVTTVVVVTTVVVVTTT"
+#
+# Compute the raw reverse complement.
 UMI_PATTERN_RC=$(revcomp_umi "$UMI_PATTERN")
-forward_regex=$(convert_to_regex "$UMI_PATTERN" "forward")
-reverse_regex=$(convert_to_regex "$UMI_PATTERN_RC" "reverse")
-# PATTERN is the concatenation of the forward regex and the reverse regex.
-PATTERN="${forward_regex}${reverse_regex}"
+# FULL_UMI_PATTERN is the concatenation of the UMI and its raw reverse complement.
+FULL_UMI_PATTERN="${UMI_PATTERN}${UMI_PATTERN_RC}"
+# Generate the regex directly from the full UMI pattern.
+PATTERN=$(convert_to_regex "$FULL_UMI_PATTERN")
 
-# print for troubleshooting
-echo "UMI PATTERN: ${UMI_PATTERN}${UMI_PATTERN_RC}"
+# Print for troubleshooting.
+echo "UMI PATTERN: $FULL_UMI_PATTERN"
 echo "UMI PATTERN as regex: $PATTERN"
 
 ### Primer formating
