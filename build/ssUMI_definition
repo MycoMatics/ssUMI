@@ -16,8 +16,6 @@ From: ubuntu:22.04
 %environment
     # Ensure conda, python, etc. are on the PATH
     export PATH="/opt/conda/bin:${PATH}"
-    # Add conda libraries to the dynamic linker search path.
-    export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/conda/lib:${LD_LIBRARY_PATH}"
 
 %post
     set -e
@@ -127,7 +125,21 @@ From: ubuntu:22.04
     conda install -c conda-forge openssl=1.0.2
     pip install --upgrade pip
     pip install pyabpoa
-    conda install -c conda-forge -c bioconda samtools minimap2
+
+    # Install SAMTOOLS from source
+    SAMTOOLS_VERSION="1.21"
+    wget "https://github.com/samtools/samtools/archive/refs/tags/${SAMTOOLS_VERSION}.tar.gz" -O /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz
+    tar xzf /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz -C /opt
+    cd /opt/samtools-${SAMTOOLS_VERSION}
+    ./configure CFLAGS="-O3" CXXFLAGS="-O3"
+    make ARFLAGS="cr"
+    make install
+    cd /opt
+    # Clean up the samtools source and tarball
+    rm -rf samtools-${SAMTOOLS_VERSION} /tmp/samtools-${SAMTOOLS_VERSION}.tar.gz
+    SAMTOOLS_PATH=$(which samtools)
+
+    conda install -c conda-forge -c bioconda minimap2
     pip install medaka==1.12.1
     medaka tools download_models
     conda deactivate
