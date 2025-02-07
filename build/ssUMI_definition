@@ -16,6 +16,8 @@ From: ubuntu:22.04
 %environment
     # Ensure conda, python, etc. are on the PATH
     export PATH="/opt/conda/bin:${PATH}"
+    # Add conda libraries to the dynamic linker search path.
+    export LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
 
 %post
     set -e
@@ -125,7 +127,7 @@ From: ubuntu:22.04
     conda install -c conda-forge openssl=1.0.2
     pip install --upgrade pip
     pip install pyabpoa
-    conda install -c bioconda samtools minimap2
+    conda install -c conda-forge -c bioconda samtools minimap2
     pip install medaka==1.12.1
     medaka tools download_models
     conda deactivate
