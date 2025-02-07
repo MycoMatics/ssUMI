@@ -26,7 +26,7 @@ USAGE="
 
 usage: $(basename "$0" .sh) [-h] (-d file -o dir -m value -M value )
 (-s value -e value -f string -F string -r string -R string -p )
-(-u value -U value -O value -S value -t value -T value) 
+(-u value -U value -O value -S value -t value -T value -P string) 
 
 where:
     -h  Show this help text.
@@ -53,12 +53,13 @@ where:
     -S  UMI bin size/UMI cluster size cutoff.
     -t  Number of threads to use.
     -T  Number of threads to use for splitting reads into UMI bins. [Default is same as -t]
+    -P  UMI pattern for binning (IUPAC codes representing a DNA strand). [Default = TTTVVVVTTVVVVTTVVVVTTVVVVTTT]
 "
 
 ### Terminal Arguments ---------------------------------------------------------
 
 # Import user arguments
-while getopts ':hzd:o:m:M:s:e:f:F:r:R:pt:u:U:O:N:S:T:E:v:' OPTION; do
+while getopts ':hzd:o:m:M:s:e:f:F:r:R:pt:u:U:O:N:S:T:E:v:P:' OPTION; do
   case $OPTION in
     h) echo "$USAGE"; exit 1;;
     d) READ_IN=$OPTARG;;
@@ -81,6 +82,7 @@ while getopts ':hzd:o:m:M:s:e:f:F:r:R:pt:u:U:O:N:S:T:E:v:' OPTION; do
     t) THREADS=$OPTARG;;
     T) BIN_THREADS=$OPTARG;;
     v) UMI_COVERAGE_MIN=$OPTARG;;
+    P) UMI_PATTERN=$OPTARG;;
     :) printf "missing argument for -$OPTARG\n" >&2; exit 1;;
     \?) printf "invalid option for -$OPTARG\n" >&2; exit 1;;
   esac
@@ -107,18 +109,121 @@ if [ -z ${THREADS+x} ]; then echo "-t is missing. Defaulting to 1 thread."; THRE
 if [ -z ${MAX_EE+x} ]; then echo "-E is missing. Defaulting max EE to 3%."; MAX_EE=0.03; fi;
 if [ -z ${UMI_COVERAGE_MIN+x} ]; then echo "-v is missing. Defaulting min coverage to 3."; UMI_COVERAGE_MIN=3; fi;
 if [ -z ${BIN_THREADS+x} ]; then BIN_THREADS=$THREADS; fi;
+if [ -z ${UMI_PATTERN+x} ]; then echo "-P is missing. UMI pattern set to TTTVVVVTTVVVVTTVVVVTTVVVVTTT."; UMI_PATTERN="TTTVVVVTTVVVVTTVVVVTTVVVVTTT"; fi;
+UMI_PATTERN=$(echo "$UMI_PATTERN" | tr '[:lower:]' '[:upper:]')
+UMI_LENGTH=${#UMI_PATTERN}
+MINCOLS_DOUBLE=$((2 * UMI_LENGTH - 4))
+MINCOLS=$((UMI_LENGTH - 2))
+
+### Functions to process the UMI pattern and primers --------------------------------------
+# Forward mapping: convert each IUPAC character to its corresponding regex group.
+declare -A mapF
+mapF[A]="[A]"
+mapF[C]="[C]"
+mapF[G]="[G]"
+mapF[T]="[T]"
+mapF[R]="[AG]"
+mapF[Y]="[CT]"
+mapF[S]="[CG]"
+mapF[W]="[AT]"
+mapF[K]="[GT]"
+mapF[M]="[AC]"
+mapF[B]="[CGT]"
+mapF[D]="[AGT]"
+mapF[H]="[ACT]"
+mapF[V]="[ACG]"
+mapF[N]="[ACGT]"
+
+# Reverse mapping: use complement rules for IUPAC.
+declare -A mapR
+mapR[A]="[T]"
+mapR[C]="[G]"
+mapR[G]="[C]"
+mapR[T]="[A]"
+mapR[R]="[CT]"
+mapR[Y]="[AG]"
+mapR[S]="[CG]"
+mapR[W]="[AT]"
+mapR[K]="[AC]"
+mapR[M]="[GT]"
+mapR[B]="[ACG]"
+mapR[D]="[ACT]"
+mapR[H]="[AGT]"
+mapR[V]="[CGT]"
+mapR[N]="[ACGT]"
+
+# Function to compute the reverse complement of the UMI pattern.
+revcomp_umi() {
+  local seq="$1"
+  local rc=""
+  local i
+  for (( i=${#seq}-1; i>=0; i-- )); do
+    local c="${seq:$i:1}"
+    # Use the full IUPAC mapping
+    case "$c" in
+      A|C|G|T|R|Y|S|W|K|M|B|D|H|V|N)
+         rc+="${mapR[$c]}"
+         ;;
+      *) rc+="$c" ;; 
+    esac
+  done
+  echo "$rc"
+}
+
+# Function to convert a given pattern string into a regex with counts.
+convert_to_regex() {
+    local input="$1"
+    local type="$2"  # "forward" or "reverse"
+    local regex=""
+    local count=0
+    local prev=""
+    local char
+    local i
+    for (( i=0; i<${#input}; i++ )); do
+       char="${input:$i:1}"
+       if [[ "$char" == "$prev" ]]; then
+         count=$((count+1))
+       else
+         if [ -n "$prev" ]; then
+           if [ "$type" == "forward" ]; then
+              regex+="${mapF[$prev]}{$count}"
+           else
+              regex+="${mapR[$prev]}{$count}"
+           fi
+         fi
+         prev="$char"
+         count=1
+       fi
+    done
+    if [ -n "$prev" ]; then
+      if [ "$type" == "forward" ]; then
+         regex+="${mapF[$prev]}{$count}"
+      else
+         regex+="${mapR[$prev]}{$count}"
+      fi
+    fi
+    echo "$regex"
+}
+
+# reverse complement the provided UMI_PATTERN using revcomp_umi().
+UMI_PATTERN_RC=$(revcomp_umi "$UMI_PATTERN")
+forward_regex=$(convert_to_regex "$UMI_PATTERN" "forward")
+reverse_regex=$(convert_to_regex "$UMI_PATTERN_RC" "reverse")
+# PATTERN is the concatenation of the forward regex and the reverse regex.
+PATTERN="${forward_regex}${reverse_regex}"
+
+# print for troubleshooting
+echo "UMI PATTERN: $UMI_PATTERN $UMI_PATTERN_RC"
+echo "UMI PATTERN as regex: $PATTERN"
 
 ### Primer formating
-revcom() {
-  echo $1 |\
-  $GAWK '{print ">dummy\n" $0}' |\
-  $SEQTK seq -r - |\
-  $GAWK '!/^>/'  
+revcom_seq() {
+  echo $1 | $GAWK '{print ">dummy\n" $0}' | $SEQTK seq -r - | $GAWK '!/^>/'
 }
-FW1R=$(revcom "$FW1")
-FW2R=$(revcom "$FW2")
-RV1R=$(revcom "$RV1")
-RV2R=$(revcom "$RV2")
+FW1R=$(revcom_seq "$FW1")
+FW2R=$(revcom_seq "$FW2")
+RV1R=$(revcom_seq "$RV1")
+RV2R=$(revcom_seq "$RV2")
 
 ### Read trimming and filtering -----------------------------------------------
 mkdir $OUT_DIR
@@ -224,7 +329,7 @@ $GAWK -v UD="$UMI_DIR" 'NR%4==1{
 
 
 # Extract UMI pairs with correct lengths
-$CUTADAPT -j $THREADS -e 0.1 -O 11 -m 28 -M 28 \
+$CUTADAPT -j $THREADS -e 0.1 -O 11 -m $UMI_LENGTH -M $UMI_LENGTH \
   --discard-untrimmed \
   -g $FW1...$FW2 -g $RV1...$RV2 \
   -G $RV2R...$RV1R -G $FW2R...$FW1R \
@@ -237,13 +342,6 @@ paste -d "" <( sed -n '1~4s/^@/>/p;2~4p' $UMI_DIR/umi1.fq ) \
   cut -d " " -f1 > $UMI_DIR/umi12.fa
 
 # Extract UMI pairs with correct patterns 
-
-# old Pattern: (NNNYRNNNYRNNNYRNNN NNNYRNNNYRNNNYRNNN)
-#PATTERN="[ATCG]{3}[CT][AG][ATCG]{3}[CT][AG][ATCG]{3}[CT][AG][ATCG]{6}\
-#[CT][AG][ATCG]{3}[CT][AG][ATCG]{3}[CT][AG][ATCG]{3}"
-#new pattern from ONT (less homopolymers) (TTTVVVVTTVVVVTTVVVVTTVVVVTTT AAABBBBAABBBBAABBBBAABBBBAAA)
-PATTERN="[T]{3}[ACG]{4}[T]{2}[ACG]{4}[T]{2}[ACG]{4}[T]{2}[ACG]{4}[T]{3}\
-[A]{3}[CGT]{4}[A]{2}[CGT]{4}[A]{2}[CGT]{4}[A]{2}[CGT]{4}[A]{3}"
 
 grep -B1 -E "$PATTERN" $UMI_DIR/umi12.fa |\
   sed '/^--$/d' > $UMI_DIR/umi12f.fa
@@ -271,7 +369,7 @@ $USEARCH \
   -maxaccepts 0 \
   -maxrejects 0 \
   -threads all \
-  -mincols 34 # Doesn't work...
+  -mincols $MINCOLS_DOUBLE
 
 $GAWK \
   '
@@ -291,12 +389,12 @@ $GAWK \
 # Chimera screening
 echo CHECKPOINT 8
 # Split UMIs into sub UMIs
-$GAWK \
+$GAWK -v UMIL="$UMI_LENGTH" \
   '
     /^>/{
       HEAD=$0
       getline
-      print HEAD "_1\n" substr($0,1,28) "\n" HEAD "_2\n" substr($0,29,28)
+      print HEAD "_1\n" substr($0,1,UMIL) "\n" HEAD "_2\n" substr($0,UMIL+1,UMIL)
     }
   ' $UMI_DIR/umi_ref.fa \
   > $UMI_DIR/umi_ref_sub.fa
@@ -312,7 +410,7 @@ $USEARCH \
   -sort size \
   -maxaccepts 0 \
   -maxrejects 0 \
-  -mincols 17 \
+  -mincols $MINCOLS \
   -threads all
 
 # Derivate screening
@@ -328,7 +426,7 @@ $USEARCH \
   -sort size \
   -maxaccepts 0 \
   -maxrejects 0 \
-  -mincols 56 \
+  -mincols $MINCOLS_DOUBLE \
   -threads all 
 
 
@@ -360,13 +458,13 @@ echo CHECKPOINT 10
 # Divide in barcode1 and barcode2 files
 cat $UMI_DIR/umi_ref.fa <($SEQTK seq -r $UMI_DIR/umi_ref.fa |\
   $GAWK 'NR%2==1{print $0 "_rc"; getline; print};') |\
-  $GAWK -v BD="$BINNING_DIR" 'NR%2==1{
+  $GAWK -v BD="$BINNING_DIR" -v UMIL="$UMI_LENGTH" 'NR%2==1{
        print $0 > BD"/umi_ref_b1.fa";
        print $0 > BD"/umi_ref_b2.fa";  
      }
      NR%2==0{
-       print substr($0, 1, 28) > BD"/umi_ref_b1.fa";
-       print substr($0, 29, 28)  > BD"/umi_ref_b2.fa";  
+       print substr($0, 1, UMIL) > BD"/umi_ref_b1.fa";
+       print substr($0, UMIL+1, UMIL)  > BD"/umi_ref_b2.fa";  
      }'
 
 # Map UMIs to UMI references
