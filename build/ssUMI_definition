@@ -17,7 +17,7 @@ From: ubuntu:22.04
     # Ensure conda, python, etc. are on the PATH
     export PATH="/opt/conda/bin:${PATH}"
     # Add conda libraries to the dynamic linker search path.
-    export LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/conda/lib:${LD_LIBRARY_PATH}"
 
 %post
     set -e
