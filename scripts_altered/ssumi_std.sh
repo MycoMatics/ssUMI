@@ -15,7 +15,7 @@ USAGE="
    
 usage: $(basename "$0" .sh) [-h] [-w string] (-d file -v value -o dir -s value) 
 (-e value -m value -M value -f string -F string -r string -R string )
-( -c value -p value -n value -u dir -t value -T value ) 
+( -c value -p value -n value -u dir -t value -T value -P string) 
 
 where:
     -h  Show this help text.
@@ -41,13 +41,14 @@ where:
     -t  Number of threads to use.
     -T  Number of medaka jobs to start. Threads pr. job is threads/jobs.
         [Default = 1].
+    -P  UMI pattern for binning (IUPAC codes representing a DNA strand).
+        [Default = TTTVVVVTTVVVVTTVVVVTTVVVVTTT].
 "
-
 
 ### Terminal Arguments ---------------------------------------------------------
 
 # Import user arguments
-while getopts ':hzd:v:o:s:e:m:M:f:F:r:R:c:p:q:w:n:u:t:T:E:' OPTION; do
+while getopts ':hzd:v:o:s:e:m:M:f:F:r:R:c:p:q:w:n:u:t:T:E:P:' OPTION; do
   case $OPTION in
     h) echo "$USAGE"; exit 1;;
     d) INPUT_READS=$OPTARG;;
@@ -70,6 +71,7 @@ while getopts ':hzd:v:o:s:e:m:M:f:F:r:R:c:p:q:w:n:u:t:T:E:' OPTION; do
     u) UMI_DIR=$OPTARG;;
     t) THREADS=$OPTARG;;
     T) MEDAKA_JOBS=$OPTARG;;
+    P) UMI_PATTERN=$OPTARG;;
     :) printf "missing argument for -$OPTARG\n" >&2; exit 1;;
     \?) printf "invalid option for -$OPTARG\n" >&2; exit 1;;
   esac
@@ -94,6 +96,7 @@ if [ -z ${MEDAKA_MODEL+x} ]; then echo "-q $MISSING"; echo "$USAGE"; exit 1; fi;
 if [ -z ${MAX_EE+x} ]; then echo "-E is missing. Defaulting to 3%."; MAX_EE=0.03; fi;
 if [ -z ${THREADS+x} ]; then echo "-t is missing. Defaulting to 1 thread."; THREADS=1; fi;
 if [ -z ${MEDAKA_JOBS+x} ]; then echo "-T is missing. Medaka jobs set to 1."; MEDAKA_JOBS=1; fi;
+if [ -z ${UMI_PATTERN+x} ]; then echo "-P is missing. UMI pattern set to TTTVVVVTTVVVVTTVVVVTTVVVVTTT."; UMI_PATTERN="TTTVVVVTTVVVVTTVVVVTTVVVVTTT"; fi;
 
 ### Source commands and subscripts -------------------------------------
 . $LONGREAD_UMI_PATH/scripts/dependencies.sh # Path to dependencies script
@@ -141,6 +144,7 @@ echo "Bin size cutoff: $UMI_COVERAGE_MIN"
 echo "UMI binning dir: $UMI_DIR"
 echo "Threads: $THREADS"
 echo "Medaka jobs: $MEDAKA_JOBS"
+echo "UMI Pattern: $UMI_PATTERN"
 echo ""
 
 # Read filtering and UMI binning
@@ -164,7 +168,8 @@ if [ -z ${UMI_DIR+x} ]; then
     -N 10000             `# Maximum number of reads +/-` \
     -t $THREADS          `# Number of threads` \
     -S 3                 `# Max bin cluster ratio` \
-    -v $UMI_COVERAGE_MIN `# Minimum UMI coverage`
+    -v $UMI_COVERAGE_MIN `# Minimum UMI coverage` \
+    -P $UMI_PATTERN      `# UMI pattern for binning`
 fi
 
 # Sample UMI bins for testing
