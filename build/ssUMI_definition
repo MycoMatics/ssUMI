@@ -16,7 +16,7 @@ From: ubuntu:22.04
 %environment
     # Ensure conda, python, etc. are on the PATH
     export PATH="/opt/conda/bin:${PATH}"
-    export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/conda/lib:${LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/conda/lib:/usr/local/lib:${LD_LIBRARY_PATH}"
 
 %post
     set -e
@@ -133,9 +133,12 @@ From: ubuntu:22.04
     tar xjf /tmp/htslib-${HTSLIB_VERSION}.tar.bz2 -C /opt
     cd /opt/htslib-${HTSLIB_VERSION}
     autoreconf -fi
-    ./configure CFLAGS="-O3" CXXFLAGS="-O3"
+    ./configure CFLAGS="-O3" CXXFLAGS="-O3" LDFLAGS="-Wl,-rpath,/usr/local/lib"
     make
     make install
+    # Update system linker configuration so /usr/local/lib is searched, should resolve a samtools problem
+    echo "/usr/local/lib" > /etc/ld.so.conf.d/usrlocal.conf
+    ldconfig
     cd /opt
     rm -rf htslib-${HTSLIB_VERSION} /tmp/htslib-${HTSLIB_VERSION}.tar.bz2
 
