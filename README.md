@@ -86,6 +86,28 @@ apptainer run ssUMI.sif  ssumi_std \
   -T 4 \
   -P TTTVVVVTTVVVVTTVVVVTTVVVVTTT
 
+# to use the Ziels repo ssUMI test data download and run with
+wget -O test_reads.fastq https://raw.githubusercontent.com//ZielsLab/ssUMI/refs/heads/main/test_data/test_reads.fastq
+  apptainer run ssUMI.sif ssumi_std \
+  -d test_reads.fastq \
+  -v 3 \
+  -o test_ssUMI_out \
+  -s 200 \
+  -e 200 \
+  -E 0.1 \
+  -m 1200 \
+  -M 2000 \
+  -f GTATCGTGTAGAGACTGCGTAGG \
+  -F AGRGTTYGATYMTGGCTCAG \
+  -r AGTGATCGAGTCAGTGCGAGTG \
+  -R GACGGGCGGTGWGTRCA \
+  -c 3 \
+  -p 2 \
+  -q r104_e81_sup_g610 \
+  -t 12 \
+  -T 4 \
+  -P NNNYRNNNYRNNNYRNNN
+
 ```
 The test data should run in <10 minutes (more if using a single thread) .
 The main output is the fasta file [consensus_raconx3_medakax2_raconx1.fa](./test_data/consensus_raconx3_medakax2_raconx1.fa) containing 58 UMIs.
