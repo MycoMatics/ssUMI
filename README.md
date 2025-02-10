@@ -46,7 +46,8 @@ apptainer run ssUMI.sif ssumi_std \
   -p 2 \
   -q r1041_e82_400bps_sup_v5.0.0 \
   -t 12 \
-  -T 4
+  -T 4 \
+  -P TTTVVVVTTVVVVTTVVVVTTVVVVTTT
 ```
 
 
