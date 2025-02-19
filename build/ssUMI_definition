@@ -113,7 +113,7 @@ From: ubuntu:22.04
     wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/ssumi_std.sh -O ${script_path}/scripts/ssumi_std.sh
     wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/umi_binning.sh -O ${script_path}/scripts/umi_binning.sh
     wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/dependencies.sh -O ${script_path}/scripts/dependencies.sh
-    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/medaka_polish.sh -O ${script_path}/scripts/medaka_polish.sh
+    wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/polish_medaka.sh -O ${script_path}/scripts/polish_medaka.sh
     wget https://raw.githubusercontent.com/MycoMatics/ssUMI/refs/heads/Apptainer/scripts_altered/racon_polish.sh -O ${script_path}/scripts/racon_polish.sh
 
     chmod -R +x ${script_path}/scripts/
