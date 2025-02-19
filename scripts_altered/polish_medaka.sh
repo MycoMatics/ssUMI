@@ -14,29 +14,28 @@
 USAGE="
 -- longread_umi polish_medaka: Nanopore UMI consensus polishing with Medaka
 
-usage: $(basename "$0" .sh) [-h] [-X] [-l value] (-c file -m string -d dir -o dir -t value -n file -T value)
+usage: $(basename "$0" .sh) [-h] [-X value] -c file -m string -d dir -o dir -t value -n file -T value
 
 where:
     -h  Show this help text.
-    -X  Resume mode: continue even if output folder exists.
+    -X  Resume mode: specify 0 to start fresh or 1 to resume.
     -c  File containing consensus sequences.
     -m  Medaka model.
     -l  Expected minimum chunk size. [Default = 6000]
-    -d  Directory containing UMI read bins in the format
-         'umi*bins.fastq'. Recursive search.
+    -d  Directory containing UMI read bins in the format 'umi*bins.fastq'. Recursive search.
     -o  Output directory.
     -t  Number of threads to use.
-    -n  Process n number of bins. If not defined all bins are processed.
+    -n  Process n number of bins. If not defined, all bins are processed.
     -T  Number of Medaka jobs to run. [Default = 1].
 "
 
 ### Terminal Arguments ---------------------------------------------------------
 
 # Import user arguments
-while getopts ':hXc:m:l:d:o:t:n:T:' OPTION; do
+while getopts ':hX:c:m:l:d:o:t:n:T:' OPTION; do
   case $OPTION in
     h) echo "$USAGE"; exit 1;;
-    X) RESUME_MODE=1;;   # Resume flag: no argument required.
+    X) RESUME_MODE=$OPTARG;;   # -X now takes an argument: 0 (fresh) or 1 (resume)
     c) CONSENSUS_FILE=$OPTARG;;
     m) MEDAKA_MODEL=$OPTARG;;
     l) CHUNK_SIZE=$OPTARG;;
@@ -50,25 +49,38 @@ while getopts ':hXc:m:l:d:o:t:n:T:' OPTION; do
   esac
 done
 
+# Default CHUNK_SIZE and MEDAKA_JOBS if not provided
+if [ -z "$CHUNK_SIZE" ]; then
+  echo "-l missing. Defaulting to 6000."
+  CHUNK_SIZE=6000
+fi
+if [ -z "$MEDAKA_JOBS" ]; then
+  echo "-T is missing. Defaulting to 1 Medaka job."
+  MEDAKA_JOBS=1
+fi
+
+# Default resume mode to 0 if not provided
+if [ -z "$RESUME_MODE" ]; then
+  RESUME_MODE=0
+fi
+
 # Check missing arguments
 MISSING="is missing but required. Exiting."
-if [ -z ${CONSENSUS_FILE+x} ]; then echo "-c $MISSING"; echo "$USAGE"; exit 1; fi; 
-if [ -z ${MEDAKA_MODEL+x} ]; then echo "-m $MISSING"; echo "$USAGE"; exit 1; fi; 
-if [ -z ${CHUNK_SIZE+x} ]; then echo "-l missing. Defaulting to 6000."; CHUNK_SIZE=6000; fi;
-if [ -z ${BINNING_DIR+x} ]; then echo "-d $MISSING"; echo "$USAGE"; exit 1; fi; 
-if [ -z ${OUT_DIR+x} ]; then echo "-o $MISSING"; echo "$USAGE"; exit 1; fi; 
-if [ -z ${THREADS+x} ]; then echo "-t $MISSING"; echo "$USAGE"; exit 1; fi; 
-if [ -z ${MEDAKA_JOBS+x} ]; then echo "-T is missing. Defaulting to 1 Medaka job."; MEDAKA_JOBS=1; fi;
+if [ -z "${CONSENSUS_FILE+x}" ]; then echo "-c $MISSING"; echo "$USAGE"; exit 1; fi; 
+if [ -z "${MEDAKA_MODEL+x}" ]; then echo "-m $MISSING"; echo "$USAGE"; exit 1; fi; 
+if [ -z "${BINNING_DIR+x}" ]; then echo "-d $MISSING"; echo "$USAGE"; exit 1; fi; 
+if [ -z "${OUT_DIR+x}" ]; then echo "-o $MISSING"; echo "$USAGE"; exit 1; fi; 
+if [ -z "${THREADS+x}" ]; then echo "-t $MISSING"; echo "$USAGE"; exit 1; fi; 
 
 ### Source commands and subscripts -------------------------------------
-. $LONGREAD_UMI_PATH/scripts/dependencies.sh # Path to dependencies script
+. "$LONGREAD_UMI_PATH/scripts/dependencies.sh" # Path to dependencies script
 
 ### Medaka polishing assembly -------------------------------------------------
 
-# Format names
+# Format output name
 OUT_NAME=${OUT_DIR##*/}
 
-# Medaka jobs
+# Medaka jobs: calculate threads per job
 MEDAKA_THREADS=$(( THREADS / MEDAKA_JOBS ))
 
 # Start medaka environment if relevant
@@ -76,7 +88,7 @@ eval "$MEDAKA_ENV_START"
 
 # Prepare output folders
 if [ -d "$OUT_DIR" ]; then
-  if [ -z "$RESUME_MODE" ]; then
+  if [ "$RESUME_MODE" -eq 0 ]; then
     echo "Output folder exists. Exiting..."
     exit 0
   else
@@ -86,13 +98,13 @@ else
   mkdir -p "$OUT_DIR"
 fi
 
-# Individual mapping of UMI bins to consensus
-
+# Create mapping folder
 mkdir -p "$OUT_DIR/mapping"
 
 medaka_align() {
   # Input: a chunk of consensus header from STDIN
-  local IN=$(cat)
+  local IN
+  IN=$(cat)
   local BINNING_DIR=$1
   local OUT_DIR=$2
 
