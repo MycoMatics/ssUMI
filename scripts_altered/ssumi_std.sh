@@ -1,7 +1,7 @@
 #!/bin/bash
 # DESCRIPTION
-#    longread_umi ssUMI_std (standard mode) script. 
-#    
+#    longread_umi ssUMI_std (standard mode) script.
+#
 # IMPLEMENTATION
 #    author   Xuan Lin (xuan.lin@ubc.ca)
 #             Ryan Ziels (ziels@mail.ubc.ca)
@@ -12,41 +12,40 @@
 
 USAGE="
 -- longread_umi ssumi_std: Generate UMI consensus sequences of full-length 16S rRNA from Q20+ Nanopore data in standard mode
-   
-usage: $(basename "$0" .sh) [-h] [-w string] (-d file -v value -o dir -s value) 
-(-e value -m value -M value -f string -F string -r string -R string )
-( -c value -p value -q value -w value -n value -u dir -t value -T value -E value -C file -X )
+
+usage: $(basename "$0" .sh) [-h] [-X] [-w string] (-d file -v value -o dir -s value)
+(-e value -m value -M value -f string -F string -r string -R string)
+(-c value -p value -q value -n value -u dir -t value -T value -E value)
+
 where:
     -h  Show this help text.
     -d  Single file containing raw Nanopore data in fastq format.
-    -v  Minimum read coverage for using UMI consensus sequences for 
-        variant calling.
+    -v  Minimum read coverage for using UMI consensus sequences for variant calling.
     -o  Output directory.
     -s  Check start of read up to s bp for UMIs.
-    -e  Check end of read up to f bp for UMIs.
+    -e  Check end of read up to e bp for UMIs.
     -m  Minimum read length.
     -M  Maximum read length.
     -E  Maximum expected error rate for raw read filtering. (0.0 - 1.0; Default = 0.03)
-    -f  Forward adaptor sequence. 
+    -f  Forward adaptor sequence.
     -F  Forward primer sequence.
     -r  Reverse adaptor sequence.
     -R  Reverse primer sequence.
     -c  Number of iterative rounds of consensus calling with Racon.
     -p  Number of iterative rounds of consensus calling with Medaka.
-    -q  Medaka model used for polishing.
+    -q  Medaka model.
     -w  Preset workflow.
-    -n  Process n number of bins. If not defined all bins are processed.
+    -n  Process n number of bins. If not defined, all bins are processed.
     -u  Directory with UMI binned reads.
     -t  Number of threads to use.
-    -T  Number of medaka jobs to start. Threads per job.
-    -C  Consensus file to start medaka polishing (produced from racon consensus step).
-    -X  Skip UMI binning and consensus steps; start at medaka polishing.
+    -T  Number of medaka jobs to start.
+    -X  Resume pipeline from medaka polishing stage (skip UMI binning and initial racon consensus).
 "
 
 ### Terminal Arguments ---------------------------------------------------------
 
 # Import user arguments
-while getopts ':hzd:v:o:s:e:m:M:f:F:r:R:c:p:q:w:n:u:t:T:E:C:X:' OPTION; do
+while getopts ':hXd:v:o:s:e:m:M:f:F:r:R:c:p:q:w:n:u:t:T:E:' OPTION; do
   case $OPTION in
     h) echo "$USAGE"; exit 1;;
     d) INPUT_READS=$OPTARG;;
@@ -60,7 +59,7 @@ while getopts ':hzd:v:o:s:e:m:M:f:F:r:R:c:p:q:w:n:u:t:T:E:C:X:' OPTION; do
     f) FW1=$OPTARG;;
     F) FW2=$OPTARG;;
     r) RV1=$OPTARG;;
-    R) RV2=$OPTARG;;  
+    R) RV2=$OPTARG;;
     c) CON_N=$OPTARG;;
     p) POL_N=$OPTARG;;
     q) MEDAKA_MODEL=$OPTARG;;
@@ -69,16 +68,15 @@ while getopts ':hzd:v:o:s:e:m:M:f:F:r:R:c:p:q:w:n:u:t:T:E:C:X:' OPTION; do
     u) UMI_DIR=$OPTARG;;
     t) THREADS=$OPTARG;;
     T) MEDAKA_JOBS=$OPTARG;;
-    C) CONSENSUS_FILE=$OPTARG;;
-    X) SKIP_TO_MEDAKA=1;;
-    :) printf "missing argument for -$OPTARG\n" >&2; exit 1;;
-    \?) printf "invalid option for -$OPTARG\n" >&2; exit 1;;
+    X) RESUME_STAGE=1;;   # Resume flag: no argument required.
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2; exit 1;;
+    \?) printf "invalid option: -%s\n" "$OPTARG" >&2; exit 1;;
   esac
 done
 
 # Check missing arguments
 MISSING="is missing but required. Exiting."
-if [ -z ${INPUT_READS+x} ]; then echo "-d $MISSING"; echo "$USAGE"; exit 1; fi; 
+if [ -z ${INPUT_READS+x} ]; then echo "-d $MISSING"; echo "$USAGE"; exit 1; fi;
 if [ -z ${UMI_COVERAGE_MIN+x} ]; then echo "-v $MISSING"; echo "$USAGE"; exit 1; fi;
 if [ -z ${OUT_DIR+x} ]; then echo "-o $MISSING"; echo "$USAGE"; exit 1; fi;
 if [ -z ${START_READ_CHECK+x} ]; then echo "-s $MISSING"; echo "$USAGE"; exit 1; fi;
@@ -96,53 +94,28 @@ if [ -z ${MAX_EE+x} ]; then echo "-E is missing. Defaulting to 3%."; MAX_EE=0.03
 if [ -z ${THREADS+x} ]; then echo "-t is missing. Defaulting to 1 thread."; THREADS=1; fi;
 if [ -z ${MEDAKA_JOBS+x} ]; then echo "-T is missing. Medaka jobs set to 1."; MEDAKA_JOBS=1; fi;
 
-# If skipping to medaka, ensure necessary variables are provided
-if [ ! -z ${SKIP_TO_MEDAKA+x} ]; then
-  if [ -z ${CONSENSUS_FILE+x} ]; then 
-    echo "Error: When using -X, you must provide a consensus file with -C."; 
-    exit 1; 
-  fi
-  if [ -z ${UMI_DIR+x} ]; then 
-    echo "Error: When using -X, you must provide UMI binned reads directory with -u."; 
-    exit 1; 
-  fi
-  if [ ! -f "$CONSENSUS_FILE" ]; then 
-    echo "Error: Consensus file $CONSENSUS_FILE not found."; 
-    exit 1; 
-  fi
-  if [ ! -d "$UMI_DIR/read_binning/bins" ]; then 
-    echo "Error: UMI binned reads directory $UMI_DIR/read_binning/bins not found."; 
-    exit 1; 
-  fi
-  # Set consensus variables from provided consensus file
-  CON=$CONSENSUS_FILE
-  CON_NAME=$(basename "$CONSENSUS_FILE" .fa)
-  # Override CON_DIR to be within OUT_DIR for subsequent medaka outputs
-  CON_DIR=$OUT_DIR/${CON_NAME}
-  mkdir -p "$CON_DIR"
-fi
-
 ### Source commands and subscripts -------------------------------------
 . $LONGREAD_UMI_PATH/scripts/dependencies.sh # Path to dependencies script
 
-if [ -d $OUT_DIR ]; then
+# Create or verify output directory.
+if [ ! -d "$OUT_DIR" ]; then
+  mkdir -p "$OUT_DIR"
+elif [ -z "$RESUME_STAGE" ]; then
   echo ""
   echo "$OUT_DIR exists. Remove existing directory or rename desired output directory."
   echo "Analysis aborted ..."
   echo ""
-  exit 1 
-else
-  mkdir $OUT_DIR
+  exit 1
 fi
 
 ### Pipeline -----------------------------------------------------------
 # Logging
 LOG_DIR=$OUT_DIR/logs
-mkdir $LOG_DIR
+mkdir -p "$LOG_DIR"
 
 LOG_NAME="$LOG_DIR/longread_ssumi_nanopore_pipeline_log_$(date +"%Y-%m-%d-%T").txt"
-echo "longread_ssumi nanopore_pipeline log" >> $LOG_NAME
-longread_umi_version_dump $LOG_NAME
+echo "longread_ssumi nanopore_pipeline log" >> "$LOG_NAME"
+longread_umi_version_dump "$LOG_NAME"
 exec &> >(tee -a "$LOG_NAME")
 exec 2>&1
 echo ""
@@ -157,7 +130,7 @@ echo "Maximum expected error rate in raw reads: $MAX_EE"
 echo "Forward adaptor sequence: $FW1"
 echo "Forward primer sequence: $FW2"
 echo "Reverse adaptor sequence: $RV1"
-echo "Reverse primer sequence: $RV2" 
+echo "Reverse adaptor primer: $RV2"
 echo "Minimum UMI coverage: $UMI_COVERAGE_MIN"
 echo "UMI subsampling: $UMI_SUBSET_N"
 echo "Racon consensus rounds: $CON_N"
@@ -168,13 +141,17 @@ echo "Bin size cutoff: $UMI_COVERAGE_MIN"
 echo "UMI binning dir: $UMI_DIR"
 echo "Threads: $THREADS"
 echo "Medaka jobs: $MEDAKA_JOBS"
-if [ ! -z ${SKIP_TO_MEDAKA+x} ]; then
-  echo "Skipping UMI binning and consensus steps. Starting from medaka polishing with consensus file: $CONSENSUS_FILE"
+if [ ! -z "$RESUME_STAGE" ]; then
+  echo "Resume mode: ON (skipping UMI binning and initial racon consensus)"
 fi
 echo ""
 
-# Only run UMI binning and consensus if not skipping to medaka
-if [ -z ${SKIP_TO_MEDAKA+x} ]; then
+#############################
+# Pipeline start adjustments:
+#############################
+if [ -z "$RESUME_STAGE" ]; then
+  # -- Normal run: perform read filtering, UMI binning, and consensus (racon) steps
+
   # Read filtering and UMI binning
   if [ -z ${UMI_DIR+x} ]; then
     UMI_DIR=$OUT_DIR/umi_binning
@@ -206,26 +183,43 @@ if [ -z ${SKIP_TO_MEDAKA+x} ]; then
       head -n $UMI_SUBSET_N > $OUT_DIR/sample$UMI_SUBSET_N.txt
   fi
 
-  # Consensus using Racon polishing
+  # Consensus (racon)
   CON_NAME=raconx${CON_N}
   CON_DIR=$OUT_DIR/$CON_NAME
   longread_umi consensus_racon \
     -d $UMI_DIR/read_binning/           `# Path to UMI bins`\
-    -o ${CON_DIR}                           `# Output folder`\
-    -p map-ont                              `# Minimap preset`\
-    -a "--no-trimming"                      `# Extra args for racon`\
-    -r $CON_N                               `# Number of racon polishing times`\
-    -t $THREADS                             `# Number of threads`\
-    -n $OUT_DIR/sample$UMI_SUBSET_N.txt     `# List of bins to process`
+    -o ${CON_DIR}                       `# Output folder`\
+    -p map-ont                          `# Minimap preset`\
+    -a "--no-trimming"                  `# Extra args for racon`\
+    -r $CON_N                           `# Number of racon polishing times`\
+    -t $THREADS                         `# Number of threads`\
+    -n $OUT_DIR/sample$UMI_SUBSET_N.txt  `# List of bins to process`
 
-  # Tidy up
+  # Tidy up mapping files from racon consensus
   tar -czvf ${CON_DIR}/mapping.tar.gz ${CON_DIR}/umi*bins --remove-files
 
-  # Set consensus file for medaka polishing
-  CON=${CON_DIR}/consensus_${CON_NAME}.fa
+else
+  # -- Resume mode: skip UMI binning and consensus steps.
+  echo "Resuming pipeline from medaka polishing stage."
+  # Ensure UMI binning directory is defined (if not provided via -u, use standard location)
+  if [ -z ${UMI_DIR+x} ]; then
+    UMI_DIR=$OUT_DIR/umi_binning
+  fi
+  # Define the consensus directory based on standard naming
+  CON_NAME=raconx${CON_N}
+  CON_DIR=$OUT_DIR/$CON_NAME
+  # Optionally, verify that the consensus file exists.
+  if [ ! -f ${CON_DIR}/consensus_${CON_NAME}.fa ]; then
+    echo "Error: Expected consensus file ${CON_DIR}/consensus_${CON_NAME}.fa not found. Exiting."
+    exit 1
+  fi
 fi
 
-## Polishing with Medaka
+####################################
+## Polishing (Medaka rounds)       ##
+####################################
+# At this point we have a consensus file from racon (or have resumed with one)
+CON=${CON_DIR}/consensus_${CON_NAME}.fa
 for j in `seq 1 $POL_N`; do
   POLISH_NAME=medakax${j}
   POLISH_DIR=${CON_DIR}_${POLISH_NAME}
@@ -237,38 +231,42 @@ for j in `seq 1 $POL_N`; do
     -o $POLISH_DIR                       `# Output folder`\
     -t $THREADS                          `# Number of threads`\
     -n $OUT_DIR/sample$UMI_SUBSET_N.txt   `# List of bins to process` \
-    -T $MEDAKA_JOBS                      `# Medaka jobs`
+    -T $MEDAKA_JOBS                      `# Uses ALL threads with medaka`
   CON=$POLISH_DIR/consensus_${CON_NAME}_${POLISH_NAME}.fa
-  # Tidy up
+  # Tidy up mapping files
   tar -czvf ${POLISH_DIR}/mapping.tar.gz ${POLISH_DIR}/mapping --remove-files
 done
 
-## Final racon polishing
+####################################
+## Final racon polishing         ##
+####################################
 CON_N2=1
 CON_NAME2=${CON_NAME}_${POLISH_NAME}_raconx${CON_N2}
 CON_DIR2=$OUT_DIR/$CON_NAME2
 longread_umi polish_racon \
     -c $CON                              `# Path to consensus data`\
     -d $UMI_DIR/read_binning/bins        `# Path to UMI bins`\
-    -o $CON_DIR2                          `# Output folder`\
-    -t $THREADS                           `# Number of threads`
+    -o $CON_DIR2                        `# Output folder`\
+    -t $THREADS                         `# Number of threads`
 # Tidy up
 tar -czvf ${CON_DIR2}/mapping.tar.gz ${CON_DIR2}/mapping/umi*bins --remove-files
 rmdir ${CON_DIR2}/mapping
 
-# Trim UMI consensus data
+####################################
+## Trim UMI consensus data       ##
+####################################
 longread_umi trim_amplicon \
   -d $CON_DIR2          `# Path to consensus data`\
-  -p '"consensus*fa"'     `# Consensus file pattern. Regex must be flanked by '"..."'`\
-  -o $OUT_DIR             `# Output folder`\
-  -F $FW2                 `# Forward primer sequence`\
-  -R $RV2                 `# Reverse primer sequence`\
-  -m $MIN_LENGTH          `# Min read length`\
-  -M $MAX_LENGTH          `# Max read length` \
-  -t $THREADS             `# Number of threads` \
+  -p '"consensus*fa"'   `# Consensus file pattern. Regex must be flanked by '"..."'`\
+  -o $OUT_DIR           `# Output folder`\
+  -F $FW2               `# Forward primer sequence`\
+  -R $RV2               `# Reverse primer sequence`\
+  -m $MIN_LENGTH        `# Min read length`\
+  -M $MAX_LENGTH        `# Max read length` \
+  -t $THREADS           `# Number of threads` \
   -l $LOG_DIR
 
-# Cluster into OTUs (currently commented out)
+# Cluster into OTUs (commands commented out)
 #$USEARCH -fastx_uniques $OUT_DIR/consensus_${CON_NAME2}.fa \
 #  -fastaout $OUT_DIR/uniques.fasta \
 #  -minuniquesize 2 \
@@ -285,5 +283,5 @@ longread_umi trim_amplicon \
 #  -centroids $OUT_DIR/otus97.fasta \
 #  -uc $OUT_DIR/clusters.uc
 
-# Tidy up UMI bins
+# Tidy up UMI binning folder
 tar -czvf $UMI_DIR/read_binning/bins.tar.gz $UMI_DIR/read_binning/bins --remove-files
