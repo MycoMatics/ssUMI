@@ -47,7 +47,8 @@ apptainer run ssUMI.sif ssumi_std \
   -q r1041_e82_400bps_sup_v5.0.0 \
   -t 12 \
   -T 4 \
-  -P TTTVVVVTTVVVVTTVVVVTTVVVVTTT
+  -P TTTVVVVTTVVVVTTVVVVTTVVVVTTT \
+  -X 0
 ```
 
 
@@ -56,6 +57,7 @@ apptainer run ssUMI.sif ssumi_std \
 # Small changes in scripts  
 Some small changes have been made to the original ssUMI pipeline scripts, the revised scripts can be found in [scripts_altered](https://github.com/MycoMatics/ssUMI/tree/Apptainer/scripts_altered)
 This includes the addition of a flag that allows the user to specify the UMI pattern (e.g. ONT advises TTTVVVVTTVVVVTTVVVVTTVVVVTTT, while the original pipeline is hardcoded for NNNYRNNNYRNNNYRNNN).
+As a bonus, there is a flag -X that can resume the analysis between racon consensus building and medaka polishing (as large fastq files can take surprisingly long to run).
 Be sure to check out the githubs of the original pipelines [Zielslab/ssUMI](https://github.com/ZielsLab/ssUMI) and [SorenKarst/longread_umi](https://github.com/SorenKarst/longread_umi) for extended information and documentation.
 
 <a name="Testrun"></a>
