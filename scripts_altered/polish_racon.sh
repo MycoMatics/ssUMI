@@ -15,11 +15,11 @@
 USAGE="
 -- longread_umi polish_racon: Nanopore UMI consensus polishing with racon
 
-usage: $(basename "$0" .sh) [-h] [-X] -c file -d dir -o dir -t value -n file
+usage: $(basename "$0" .sh) [-h] [-X value] -c file -d dir -o dir -t value -n file
 
 where:
     -h  Show this help text.
-    -X  Resume mode: continue even if output folder exists.
+    -X  Resume mode: specify 0 to start fresh or 1 to resume.
     -c  File containing consensus sequences.
     -d  Directory containing UMI read bins in the format 'umi*bins.fastq' (recursive search).
     -o  Output directory.
@@ -30,10 +30,10 @@ where:
 ### Terminal Arguments ---------------------------------------------------------
 
 # Import user arguments
-while getopts ':hXc:d:o:t:n:' OPTION; do
+while getopts ':hX:c:d:o:t:n:' OPTION; do
   case $OPTION in
     h) echo "$USAGE"; exit 1;;
-    X) RESUME_MODE=1;;   # Resume flag: no argument required.
+    X) RESUME_MODE=$OPTARG;;
     c) CONSENSUS_FILE=$OPTARG;;
     d) BINNING_DIR=$OPTARG;;
     o) OUT_DIR=$OPTARG;;
@@ -43,6 +43,11 @@ while getopts ':hXc:d:o:t:n:' OPTION; do
     \?) printf "invalid option: -%s\n" "$OPTARG" >&2; exit 1;;
   esac
 done
+
+# Default resume mode to 0 if not provided
+if [ -z "$RESUME_MODE" ]; then
+  RESUME_MODE=0
+fi
 
 # Check missing arguments
 MISSING="is missing but required. Exiting."
@@ -61,7 +66,7 @@ OUT_NAME=${OUT_DIR##*/}
 
 # Prepare output folder
 if [ -d "$OUT_DIR" ]; then
-  if [ -z "$RESUME_MODE" ]; then
+  if [ "$RESUME_MODE" -eq 0 ]; then
     echo "Output folder exists. Exiting..."
     exit 0
   else
