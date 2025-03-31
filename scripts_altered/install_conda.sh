@@ -38,7 +38,7 @@ dependencies:
 - racon=1.4.10
 - minimap2=2.17
 - gawk=4.1.3
-- cutadapt=2.7
+- cutadapt=4.6
 - filtlong=0.2.0
 - bwa=0.7.17
 - samtools=1.9
